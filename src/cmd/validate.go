@@ -141,6 +141,12 @@ func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier
 
 	err = json.Unmarshal(jsonText, &reqResp)
 	if err != nil {
+		prettyJSON, err := json.MarshalIndent(jsonText, "", "    ")
+		if err != nil {
+			log.Fatal("Failed to print contents", err)
+		}
+		fmt.Printf("%s\n", string(prettyJSON))
+
 		log.Fatal("JSON Validation: Fail")
 	}
 
@@ -149,7 +155,14 @@ func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier
 	validJSON, formatErrors := verifyJSONformat(reqResp)
 
 	if validJSON {
-		fmt.Println("JSON Schema: Pass")
+		fmt.Printf("JSON Schema: Pass\n\n")
+
+		prettyJSON, err := json.MarshalIndent(reqResp, "", "    ")
+		if err != nil {
+			log.Fatal("Failed to print contents", err)
+		}
+		fmt.Printf("%s\n", string(prettyJSON))
+
 	} else {
 		fmt.Println("JSON Schema: Fail")
 		for _, formatError := range formatErrors {

@@ -12,8 +12,8 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "yurl",
-	Short:   "Validate whether your URL is enabled properly",
-	Version: "v0.1.0",
+	Short:   "yURL: Validate whether your URL is enabled properly",
+	Version: "v0.1.1",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
