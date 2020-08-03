@@ -14,10 +14,19 @@ brew install chayev/tap/yurl
 
 ### Install using cURL 
 
+Run the below command. Note that you will be prompted to enter your password.
+
 ```
 curl -sSL "https://github.com/chayev/yurl/releases/download/v0.1.0/yurl-v0.1.0-macOS-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
 ```
 
+Note: that you will be prompted to enter your password.
+
 ## Usage
 
-Run `yurl help` for information on how to use yURL
+Run `yurl help` for information on how to use yURL.
+
+## License
+
+This repository is licensed under the MIT license.
+The license can be found [here](./LICENSE).
