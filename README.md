@@ -1,21 +1,21 @@
-# yURL: AASA / Universal Links File Validator
+# yURL: Universal Links / AASA File Validator
 
-A terminal utility that allows you to validate whether your URL is properly formatted for Universal Links. This allows you to check if the AASA file exists and is in the proper configuration.
+yURL is a terminal utility that allows you to validate whether a URL is properly formatted for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper configuration as [defined by Apple](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
 
 ## macOS Install Instructions
 
-### Install using cURL 
-
-```
-curl -sSL "https://github.com/mibragimchayev/yurl/releases/download/v0.1.0/yurl-v0.1.0-macOS-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
-```
-
-### Install with Brew (coming soon)
+### Install with Brew
 
 Install yURL with [Brew](https://brew.sh/):
 
 ```
-brew install mibragimchayev/tap/yurl
+brew install chayev/tap/yurl
+```
+
+### Install using cURL 
+
+```
+curl -sSL "https://github.com/chayev/yurl/releases/download/v0.1.0/yurl-v0.1.0-macOS-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
 ```
 
 ## Usage

@@ -1,4 +1,4 @@
-module github.com/mibragimchayev/yurl
+module github.com/chayev/yurl
 
 go 1.14
 
