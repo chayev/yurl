@@ -1,0 +1,104 @@
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #cfe2f3;
+    height: 100%;
+    text-align: center;
+}
+
+header {
+    text-align: right;
+}
+
+main {
+    flex-grow: 1;
+    margin: 0 auto;
+    width: 60%;
+    max-width: 800px;
+}
+
+form {
+    margin: 0 auto;
+    width: 100%;
+}
+
+form input {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+} 
+
+form input[type="text"] {
+    padding: 5px;
+    height: 40px;
+}
+
+form input[type="submit"] {
+    border-radius: 5px;
+    background-color: #333333;
+    padding: 6px;
+    height: 40px;
+    color: #ffffff;
+}
+
+#main {
+    background-color: #f3f3f3;
+}
+
+#main header {
+    background-color: #cfe2f3;
+    display: flex;
+    justify-content: space-between;
+    height: 56px;
+    line-height: 56px;
+}
+
+#main h1 {
+    margin: 0;
+}
+
+#main h2 {
+    margin: 0;
+    font-size: 18px;
+    text-align: left;
+}
+
+#main main {
+    padding-top: 10px;
+    margin: 0 auto;
+    width: 80%;
+    max-width: 1200px;
+}
+
+#main form {
+    display: flex;
+    justify-content: space-between;
+}
+#main form input {
+
+}
+
+#main input[name="url"] {
+    width: 50%;
+}
+
+#main input[name="prefix"],
+#main input[name="bundle"] {
+    width: 20%;
+}
+
+#main form input[type="submit"] {
+    width: 40px;
+}
+
+#main .padding {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+pre {
+    background-color: #ffffff;
+    text-align: left;
+    padding: 30px;
+    overflow-x: auto; 
+}
