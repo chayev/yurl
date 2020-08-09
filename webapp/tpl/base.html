@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>yURL: Universal Links / AASA File Validator</title>
         <link href="/static/sanitize.css" rel="stylesheet" />
         <link href="/static/main.css" rel="stylesheet" />
+        <script src="https://kit.fontawesome.com/8c05e09944.js" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="Description" content="yURL allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as defined by Apple." />
     </head>
     <body>
-        <header><a href="https://www.github.com/chayev/yurl" target="_blank">GH</a></header>
+        <header><a href="https://www.github.com/chayev/yurl" id="github-home" target="_blank" rel="noopener" title="Go to the GitHub project" aria-label="Go to the GitHub project"><i class="fab fa-github"></i></a></header>
         <main>
-            <h1>yURL: Universal Links / AASA File Validator</h1>
-            <p>yURL allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as <a href="https://developer.apple.com/documentation/safariservices/supporting_associated_domains">defined by Apple</a>.</p>
-            <form>
-                <input type="text" name="url" placeholder="Enter a URL test (e.g. https://app.chayev.com/xyx)">
-                <input type="text" name="prefix" placeholder="Apple App Prefix (Optional)">
-                <input type="text" name="bundle" placeholder="Bundle Identifier (Optional)">
-                <input type="submit" value="Validate">
+            <h1><span>yURL</span>: Universal Links / AASA File Validator</h1>
+            <p>yURL allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as <a href="https://developer.apple.com/documentation/safariservices/supporting_associated_domains" target="_blank" rel="noopener" aria-label="Apple Universal Links Requirements">defined by Apple</a>.</p>
+            <form method="GET" action="/results">
+                <input type="text" name="url" placeholder="Enter a URL test (e.g. https://app.chayev.com/xyx)" tabindex="1" />
+                <input type="text" name="prefix" placeholder="Apple App Prefix (Optional)" tabindex="2" />
+                <input type="text" name="bundle" placeholder="Bundle Identifier (Optional)" tabindex="3" />
+                <input type="submit" value="Validate" tabindex="4" />
             </form>
         </main>
-        <footer>© 2020 <a href="https://www.chayev.com">Michael Ibragimchayev</a></footer>
+        <footer>© 2020 <a href="https://www.chayev.com" target="_blank" rel="noopener" aria-label="Michael Ibragimchayev's Personal Site">Michael Ibragimchayev</a></footer>
     </body>
 </html>

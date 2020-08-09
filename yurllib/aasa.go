@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -23,7 +22,9 @@ type aasaFile struct {
 	Applinks *appLinks `json:"applinks"`
 }
 
+// CheckDomain : Main function used by CLI and WebApp
 func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string, allowUnencrypted bool) []string {
+
 	var output []string
 
 	//Clean up domains, removing scheme and path
@@ -32,19 +33,37 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 		output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
 	}
 
-	cleanedDomain := parsedURL.Host
 	scheme := parsedURL.Scheme
+	var cleanedDomain string
 
 	if scheme != "https" {
 		output = append(output, fmt.Sprintf("WARNING: The URL must use HTTPS, trying HTTPS instead. \n\n"))
+
+		parsedURL.Scheme = "https"
+		parsedURL, err := url.Parse(parsedURL.String())
+		if err != nil {
+			output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
+		}
+
+		cleanedDomain = parsedURL.Host
+
+		// debug
+		// output = append(output, fmt.Sprintf("isAbsolute: %t \n", parsedURL.IsAbs()))
+		// output = append(output, fmt.Sprintf("parsedURL: %s \n", parsedURL))
+		// output = append(output, fmt.Sprintf("String: %s \n", parsedURL.String()))
+		// output = append(output, fmt.Sprintf("Host: %s \n", parsedURL.Host))
+		// output = append(output, fmt.Sprintf("Scheme: %s \n", parsedURL.Scheme))
+		// output = append(output, fmt.Sprintf("opaque: %s \n\n", parsedURL.Opaque))
+	} else {
+		cleanedDomain = parsedURL.Host
 	}
 
-	// fmt.Println(cleanedDomain)
-
 	// call loadAASAContents and handle response
-	result, message, err := loadAASAContents(cleanedDomain)
-	if err != nil {
-		output = append(output, fmt.Sprintf("Error: %s", err))
+	result, message, errors := loadAASAContents(cleanedDomain)
+	if len(errors) > 0 {
+		for _, e := range errors {
+			output = append(output, fmt.Sprintf("  %s\n", e))
+		}
 		return output
 	}
 	defer result.Body.Close()
@@ -74,50 +93,63 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 	return output
 }
 
-func loadAASAContents(domain string) (*http.Response, []string, error) {
+func loadAASAContents(domain string) (*http.Response, []string, []error) {
+
 	var output []string
+	var formatErrors []error
+	var respStatus int
 
 	wellKnownPath := "https://" + domain + "/.well-known/apple-app-site-association"
 	aasaPath := "https://" + domain + "/apple-app-site-association"
 
-	resp := makeRequest(wellKnownPath)
-	respStatus := resp.StatusCode
+	resp, err := makeRequest(wellKnownPath)
+	if err == nil {
+		respStatus = resp.StatusCode
 
-	if respStatus >= 200 && respStatus < 300 {
-		output = append(output, fmt.Sprintf("Found file at:\n  %s\n\n", wellKnownPath))
-		output = append(output, fmt.Sprintln("No Redirect: Pass"))
-		return resp, output, nil
+		if respStatus >= 200 && respStatus < 300 {
+			output = append(output, fmt.Sprintf("Found file at:\n  %s\n\n", wellKnownPath))
+			output = append(output, fmt.Sprintln("No Redirect: \t\t\t  Pass"))
+			return resp, output, nil
+		}
+	} else {
+		formatErrors = append(formatErrors, fmt.Errorf("Error: %w", err))
 	}
 
-	resp = makeRequest(aasaPath)
-	respStatus = resp.StatusCode
+	resp, err = makeRequest(aasaPath)
+	if err == nil {
+		respStatus = resp.StatusCode
 
-	if respStatus >= 200 && respStatus < 300 {
-		output = append(output, fmt.Sprintf("Found file at:\n  %s\n\n", aasaPath))
-		output = append(output, fmt.Sprintln("No Redirect: Pass"))
-		return resp, output, nil
+		if respStatus >= 200 && respStatus < 300 {
+			output = append(output, fmt.Sprintf("Found file at:\n  %s\n\n", aasaPath))
+			output = append(output, fmt.Sprintln("No Redirect: \t\t\t Pass"))
+			return resp, output, nil
+		}
+	} else {
+		formatErrors = append(formatErrors, fmt.Errorf("Error: %w", err))
 	}
 
-	return nil, output, errors.New("could not find file in either known locations")
+	formatErrors = append(formatErrors, errors.New("could not find file in either known locations"))
+
+	return nil, output, formatErrors
 }
 
-func makeRequest(fileURL string) *http.Response {
+func makeRequest(fileURL string) (*http.Response, error) {
+
 	resp, err := http.Get(fileURL)
 	if err != nil {
-		log.Fatal("The http request failed with error", err)
-		//Handle Error messaging better
+		return nil, err
 	}
-	// defer resp.Body.Close()
 
-	return resp
+	return resp, nil
 }
 
 func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier string, encrypted bool) []string {
+
 	var output []string
 
 	jsonText, err := ioutil.ReadAll(result.Body)
 	if err != nil {
-		log.Println("ioutil.ReadAll failed to parse with error", err) //define this better
+		output = append(output, fmt.Sprintf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
 		return output
 	}
 
@@ -127,45 +159,44 @@ func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier
 	if err != nil {
 		prettyJSON, err := json.MarshalIndent(jsonText, "", "    ")
 		if err != nil {
-			log.Println("Failed to print contents", err)
+			output = append(output, fmt.Sprintf("Failed to print contents with error: %w", err))
 			return output
 		}
-		output = append(output, fmt.Sprintf("%s\n", string(prettyJSON)))
+		output = append(output, fmt.Sprintln("JSON Validation: Fail"))
 
-		log.Println("JSON Validation: Fail")
+		output = append(output, fmt.Sprintf("%s\n", string(prettyJSON)))
 
 		return output
 	}
 
-	output = append(output, fmt.Sprintln("JSON Validation: Pass"))
+	output = append(output, fmt.Sprintln("JSON Validation: \t\t  Pass"))
 
 	validJSON, formatErrors := verifyJSONformat(reqResp)
 
 	if validJSON {
-		output = append(output, fmt.Sprintf("JSON Schema: Pass\n\n"))
+		output = append(output, fmt.Sprintln("JSON Schema: \t\t\t  Pass"))
+
+		if bundleIdentifier != "" {
+			if verifyBundleIdentifierIsPresent(reqResp, bundleIdentifier, teamIdentifier) {
+				output = append(output, fmt.Sprintln("Team/Bundle availability: Pass"))
+			} else {
+				output = append(output, fmt.Sprintln("Team/Bundle availability: Fail"))
+			}
+		}
 
 		prettyJSON, err := json.MarshalIndent(reqResp, "", "    ")
 		if err != nil {
-			log.Println("Failed to print contents", err)
+			output = append(output, fmt.Sprintf("Failed to print contents with error: %w", err))
 			return output
 		}
-		output = append(output, fmt.Sprintf("%s\n", string(prettyJSON)))
+		output = append(output, fmt.Sprintf("\n%s\n", string(prettyJSON)))
 
 	} else {
 		output = append(output, fmt.Sprintln("JSON Schema: Fail"))
 		for _, formatError := range formatErrors {
-			fmt.Println("  %s\n", formatError)
-			return output
+			output = append(output, fmt.Sprintf("  %s\n", formatError))
 		}
-	}
-
-	if validJSON && bundleIdentifier != "" {
-		if verifyBundleIdentifierIsPresent(reqResp, bundleIdentifier, teamIdentifier) {
-			output = append(output, fmt.Sprintln("Team/Bundle availability: Pass"))
-		} else {
-			output = append(output, fmt.Sprintln("Team/Bundle availability: Fail"))
-		}
-
+		return output
 	}
 
 	return output
@@ -173,6 +204,7 @@ func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier
 }
 
 func verifyJSONformat(content aasaFile) (bool, []error) {
+
 	appLinks := content.Applinks
 
 	var formatErrors []error
