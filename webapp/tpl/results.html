@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>yURL: Universal Links / AASA File Validator</title>
+        <link href="/static/sanitize.css" rel="stylesheet" />
+        <link href="/static/main.css" rel="stylesheet" />
+        <script src="https://kit.fontawesome.com/8c05e09944.js" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="Description" content="yURL allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as defined by Apple." />
+    </head>
+    <body id="results">
+        <header class="padding">
+            <h1><a href="/" aria-label="Go to Homepage" tabindex="-1">yURL</a>: Universal Links / AASA File Validator</h1>
+            <a href="https://www.github.com/chayev/yurl" target="_blank" rel="noopener" title="Go to the GitHub project" aria-label="Go to the GitHub project" tabindex="-1"><i class="fab fa-github"></i></a>
+        </header>
+        <main class="padding">
+            <form method="GET" action="/results" id="aasa">
+                <label for="url">URL</label>
+                <label for="prefix">Apple App Prefix</label>
+                <label for="bundle">Bundle Identifier</label>
+                <input type="text" name="url" placeholder="Required" value="{{ .URL }}" tabindex="1"/>  
+                <input type="text" name="prefix" placeholder="Optional" value="{{ .Prefix }}" tabindex="2" />  
+                <input type="text" name="bundle" placeholder="Optional" value="{{ .Bundle }}" tabindex="3" /> 
+                <a href="#" onclick="document.getElementById('aasa').submit()" tabindex="4"><i class="fas fa-redo-alt"></i></a>
+                <input type="submit" tabindex="-1" />
+            </form>
+            <h2>Results:</h2>
+            <pre>{{ .Content }}</pre>
+        </main>
+        <footer>© 2020 <a href="https://www.chayev.com" target="_blank" rel="noopener" aria-label="Michael Ibragimchayev's Personal Site" tabindex="-1">Michael Ibragimchayev</a></footer>
+    </body>
+</html>

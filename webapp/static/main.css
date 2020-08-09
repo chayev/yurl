@@ -10,11 +10,19 @@ header {
     text-align: right;
 }
 
+#github-home {
+    padding-right: 50px;
+}
+
 main {
     flex-grow: 1;
     margin: 0 auto;
     width: 60%;
     max-width: 800px;
+}
+
+h1 span {
+    text-decoration: underline;
 }
 
 form {
@@ -41,11 +49,16 @@ form input[type="submit"] {
     color: #ffffff;
 }
 
-#main {
+#results {
     background-color: #f3f3f3;
 }
 
-#main header {
+#results .padding {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+#results header {
     background-color: #cfe2f3;
     display: flex;
     justify-content: space-between;
@@ -53,47 +66,54 @@ form input[type="submit"] {
     line-height: 56px;
 }
 
-#main h1 {
+#results h1 {
     margin: 0;
 }
 
-#main h2 {
+#results h1 a {
+    color: #000000;
+}
+
+#results h2 {
     margin: 0;
     font-size: 18px;
     text-align: left;
+    padding-top: 16px;
+    padding-left: 4px;
 }
 
-#main main {
+#results main {
     padding-top: 10px;
     margin: 0 auto;
     width: 80%;
     max-width: 1200px;
 }
 
-#main form {
-    display: flex;
-    justify-content: space-between;
-}
-#main form input {
-
-}
-
-#main input[name="url"] {
-    width: 50%;
+#results form {
+    display: grid;
+    width: 100%;
+    grid-template-columns: auto 20% 20% 40px;
+    grid-template-rows: auto 40px;
+    gap: 5px 10px;
 }
 
-#main input[name="prefix"],
-#main input[name="bundle"] {
-    width: 20%;
+#results form label {
+    text-align: left;
+    font-size: small;
+    font-weight: bold;
+    padding-left: 4px;
 }
 
-#main form input[type="submit"] {
+#results form label[for="bundle"] {
+    grid-column-start: span 2;
+}
+
+#results form a {
     width: 40px;
 }
 
-#main .padding {
-    padding-left: 50px;
-    padding-right: 50px;
+#results form input[type="submit"] {
+    display: none;
 }
 
 pre {
@@ -101,4 +121,22 @@ pre {
     text-align: left;
     padding: 30px;
     overflow-x: auto; 
+}
+
+.fa-redo-alt {
+    color: #333333;
+    line-height: 40px !important;
+    font-size: 35px;
+}
+
+.fa-github {
+    color: #333333;
+    font-size: 40px;
+    line-height: 56px !important;
+}
+
+footer, 
+footer a {
+    color: #333333;
+    padding: 8px;
 }
