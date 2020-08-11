@@ -1,6 +1,6 @@
 # yURL: Universal Links / AASA File Validator
 
-yURL is a CLI (Command-Line Interface) that allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as [defined by Apple](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
+yURL is a CLI (Command-Line Interface) and [webapp](https://yurl.chayev.com/) that allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as [defined by Apple](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
 
 ## macOS Install Instructions
 
