@@ -1,4 +1,5 @@
 # yURL: Universal Links / AASA File Validator
+[![CircleCI Build Status](https://circleci.com/gh/chayev/yurl.svg?style=shield)](https://circleci.com/gh/chayev/yurl) [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/chayev/yurl/master/LICENSE)
 
 yURL is a CLI (Command-Line Interface) and [webapp](https://yurl.chayev.com/) that allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as [defined by Apple](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
 
