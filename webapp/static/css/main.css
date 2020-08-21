@@ -21,7 +21,7 @@ main {
     max-width: 800px;
 }
 
-h1 span {
+#name {
     text-decoration: underline;
 }
 
@@ -97,6 +97,10 @@ form input[type="submit"] {
     gap: 5px 10px;
 }
 
+.mini {
+    display: none;
+}
+
 #results form label {
     text-align: left;
     font-size: small;
@@ -104,16 +108,14 @@ form input[type="submit"] {
     padding-left: 4px;
 }
 
-#results form label[for="bundle"] {
-    grid-column-start: span 2;
+@media (min-width: 881px) {
+    #results form label[for="bundle"] {
+        grid-column-start: span 2;
+    }
 }
 
 #results form a {
     width: 40px;
-}
-
-#results form input[type="submit"] {
-    display: none;
 }
 
 pre {
@@ -139,4 +141,30 @@ footer,
 footer a {
     color: #333333;
     padding: 8px;
+}
+
+@media (max-width: 880px) {
+    main { width: 80%; }
+    #description { display: none; }
+    #results main { width: 95%; }
+    #results form { 
+        display: grid;
+        grid-template-columns: 55px auto;
+        grid-template-rows: 40px 40px 40px 40px;
+        line-height: 40px;
+    }
+    #results form input[type=submit]  {
+        grid-column-start: span 2;
+        padding: 0;
+    }
+    .mini {
+        display: grid;
+    }
+    .wide {
+        display: none;
+    }
+    #results .padding { 
+        padding-left: 15px;
+        padding-right: 15px;
+    }
 }
