@@ -1,0 +1,50 @@
+project_name: yurl
+
+builds:
+  - dir: cli
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w -X github.com/chayev/yurl/cmd.version={{ .Version }} -extldflags "-static"
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    files:
+      - LICENSE
+      - README.md
+    replacements:
+      darwin: macos
+
+nfpms:
+  - file_name_template: "{{ .ProjectName }}-v{{ .Version }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    homepage: "https://yurl.chayev.com"
+    maintainer: "Michael Ibragimchayev <michael@chayev.com>"
+    description: "Universal Links / AASA File Validator."
+    license: MIT
+    formats:
+      - deb
+    bindir: /usr/bin
+
+brews:
+  - tap:
+      owner: chayev
+      name: homebrew-tap
+    commit_author:
+      name: "Michael Ibragimchayev (chayev)"
+      email: "michael@chayev.com"
+    folder: Formula
+    homepage: "https://github.com/chayev/yurl"
+    description: "Universal Links / AASA File Validator."
+    test: |
+      system "#{bin}/yurl", "help"
+
+checksum:
+  name_template: "{{ .ProjectName }}-v{{ .Version }}-checksums.txt"
