@@ -1,0 +1,26 @@
+name: yurl
+title: "yURL"
+summary: "A Docker utility."
+description: |
+    yURL: Validate whether your URL is enabled properly.
+license: MIT
+base: core18
+grade: stable
+confinement: strict
+adopt-info: yurl
+
+parts:
+  yurl:
+    plugin: dump
+    source: .
+    override-build: |
+      snapcraftctl build
+      cp dist/yurl_linux_amd64/yurl $SNAPCRAFT_PART_INSTALL
+      chmod +x $SNAPCRAFT_PART_INSTALL/yurl
+      snapcraftctl set-version $(cat VERSION)
+apps:
+  yurl:
+    command: yurl
+    plugs:
+      - home
+      - network
