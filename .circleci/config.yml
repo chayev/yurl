@@ -25,7 +25,7 @@ jobs:
           command: cd cli && go build -o yurl
       - run:
           name: "Check Version for CLI"
-          command: cd cli && ./yurl --version
+          command: cd cli && ./yurl version
       - run:
           name: "Download Dependancies for webapp"
           command: cd webapp && go mod download
