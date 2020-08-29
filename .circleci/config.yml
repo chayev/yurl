@@ -4,11 +4,44 @@ workflows:
   main:
     jobs:
       - test
-
+      - build-cli
+      - build-webapp
+  release:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
+      - build-cli:
+          name: "Build CLI"
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
+          publish: true
+      - build-webapp:
+          name: "Build Webapp"
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
+          publish: true
+            
 jobs:
   test:
     docker:
-      - image: cimg/go:1.14
+      - image: cimg/go:1.15
     steps:
       - checkout
       - restore_cache:
@@ -21,21 +54,60 @@ jobs:
           name: "Run Tests for CLI"
           command: cd cli && go test
       - run:
-          name: "Build CLI"
-          command: cd cli && go build -o yurl
-      - run:
-          name: "Check Version for CLI"
-          command: cd cli && ./yurl version
-      - run:
           name: "Download Dependancies for webapp"
           command: cd webapp && go mod download
       - run:
           name: "Run Tests for webapp"
           command: cd webapp && go test
-      - run:
-          name: "Build webapp"
-          command: cd webapp && go build -o yurl-webapp
       - save_cache:
           key: go-mod-v1
           paths:
             - "/go/pkg/mod"
+  build-cli:
+    parameters:
+      publish:
+        type: boolean
+        default: false
+    docker:
+      - image: cimg/go:1.15
+    steps:
+      - checkout
+      - run:
+          name: "Install GoReleaser"
+          command: |
+            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v0.142.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
+            goreleaser --version
+      - unless:
+          condition: << parameters.publish >>
+          steps:
+            - run:
+                name: "Build Binaries with GoReleaser"
+                command: goreleaser --snapshot --skip-publish --rm-dist
+      - when:
+          condition: << parameters.publish >>
+          steps:
+            - run:
+                name: "Build Binaries & Publish with GoReleaser"
+                command: goreleaser
+      - persist_to_workspace:
+          root: "."
+          paths:
+            - "dist"
+      - run:
+          name: "Display CLI version"
+          command: dist/yurl_linux_amd64/yurl version
+  build-webapp:
+    parameters:
+      publish:
+        type: boolean
+        default: false
+    docker:
+      - image: cimg/go:1.15
+    steps:
+      - checkout
+      - run:
+          name: "Download Dependancies for webapp"
+          command: cd webapp && go mod download
+      - run:
+          name: "Build webapp"
+          command: cd webapp && go build -o yurl-webapp
