@@ -1,18 +1,13 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# Binaries
+/cli/yurl
+/webapp/yurl-webapp
+/dist/
 
-# Test binary, built with `go test -c`
-*.test
+# Snapcraft
+*.snap
+/parts/
+/prime/
+/stage/
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
-# Dependency directories (remove the comment below to include it)
-# vendor/
-
+# Other
 .DS_Store
-dist/
