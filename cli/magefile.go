@@ -3,6 +3,8 @@
 package main
 
 import (
+	"go/build"
+
 	"github.com/magefile/mage/sh"
 )
 
@@ -12,10 +14,10 @@ func Install() error {
 		return err
 	}
 
-	return sh.Run("go", "install", "./...")
+	return sh.Run("go", "build", "-o", build.Default.GOPATH+"/bin/yurl")
 }
 
 func Remove() error {
 
-	return sh.Run("go", "clean", "-i", "github.com/chayev/yurl")
+	return sh.Run("rm", build.Default.GOPATH+"/bin/yurl")
 }
