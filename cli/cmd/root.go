@@ -10,9 +10,8 @@ import (
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:     "yurl",
-	Short:   "yURL: Validate whether your URL is enabled properly",
-	Version: "v0.3.0",
+	Use:   "yurl",
+	Short: "yURL: Validate whether your URL is enabled properly",
 }
 
 func Execute() {
