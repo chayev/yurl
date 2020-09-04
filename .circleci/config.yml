@@ -132,7 +132,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cibuilds/snapcraft:core18
+      - image: cibuilds/snapcraft:core20
     steps:
       - checkout
       - attach_workspace:
