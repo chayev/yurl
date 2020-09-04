@@ -4,7 +4,7 @@ summary: "A universal links & AASA file validator."
 description: |
   yURL is a CLI (Command-Line Interface) and webapp that allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as defined by Apple.
 license: MIT
-base: core18
+base: core20
 grade: stable
 confinement: strict
 adopt-info: yurl
