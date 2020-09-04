@@ -6,6 +6,10 @@ workflows:
       - test
       - build-cli
       - build-webapp
+      - build-snap:
+          name: "Build Test Snap"
+          requires:
+            - build-cli
   release:
     jobs:
       - test:
@@ -37,6 +41,11 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
           publish: true
+      - build-snap:
+          name: "Build 'stable' Snap"
+          requires:
+            - "Build CLI"
+          publish-stable: true
             
 jobs:
   test:
@@ -111,3 +120,29 @@ jobs:
       - run:
           name: "Build webapp"
           command: cd webapp && go build -o yurl-webapp
+  build-snap:
+    parameters:
+      publish-stable:
+        type: boolean
+        default: false
+    docker:
+      - image: cibuilds/snapcraft:core18
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Build Snap"
+          command: |
+            # Generate a version file that Snapcraft can use
+            dist/yurl_linux_amd64/yurl version --short > VERSION
+            snapcraft
+      - when:
+          condition: << parameters.publish-stable >>
+          steps:
+            - run:
+                name: "Publish to Snap Store in the Stable Channel"
+                command: |
+                  # Snapcraft Tokens are valid for 1 year. This one expires September 3rd, 2021
+                  echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
+                  snapcraft push *.snap --release=stable
