@@ -27,36 +27,9 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 
 	var output []string
 
-	//Clean up domains, removing scheme and path
-	parsedURL, err := url.Parse(inputURL)
-	if err != nil {
-		output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
-	}
+	cleanedDomain, messages := getDomain(inputURL)
 
-	scheme := parsedURL.Scheme
-	var cleanedDomain string
-
-	if scheme != "https" {
-		output = append(output, fmt.Sprintf("WARNING: The URL must use HTTPS, trying HTTPS instead. \n\n"))
-
-		parsedURL.Scheme = "https"
-		parsedURL, err := url.Parse(parsedURL.String())
-		if err != nil {
-			output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
-		}
-
-		cleanedDomain = parsedURL.Host
-
-		// debug
-		// output = append(output, fmt.Sprintf("isAbsolute: %t \n", parsedURL.IsAbs()))
-		// output = append(output, fmt.Sprintf("parsedURL: %s \n", parsedURL))
-		// output = append(output, fmt.Sprintf("String: %s \n", parsedURL.String()))
-		// output = append(output, fmt.Sprintf("Host: %s \n", parsedURL.Host))
-		// output = append(output, fmt.Sprintf("Scheme: %s \n", parsedURL.Scheme))
-		// output = append(output, fmt.Sprintf("opaque: %s \n\n", parsedURL.Opaque))
-	} else {
-		cleanedDomain = parsedURL.Host
-	}
+	output = append(output, messages...)
 
 	// call loadAASAContents and handle response
 	result, message, errors := loadAASAContents(cleanedDomain)
@@ -91,6 +64,31 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 	}
 
 	return output
+}
+
+func getDomain(input string) (string, []string) {
+
+	var output []string
+
+	//Clean up domains, removing scheme and path
+	parsedURL, err := url.Parse(input)
+	if err != nil {
+		output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
+	}
+
+	scheme := parsedURL.Scheme
+
+	if scheme != "https" {
+		output = append(output, fmt.Sprintf("WARNING: The URL must use HTTPS, trying HTTPS instead. \n\n"))
+
+		parsedURL.Scheme = "https"
+		parsedURL, err = url.Parse(parsedURL.String())
+		if err != nil {
+			output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
+		}
+	}
+
+	return parsedURL.Host, output
 }
 
 func loadAASAContents(domain string) (*http.Response, []string, []error) {
