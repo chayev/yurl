@@ -18,14 +18,36 @@ brew install chayev/tap/yurl
 Run the below command:
 
 ```
-curl -sSL "https://github.com/chayev/yurl/releases/download/v0.1.0/yurl-v0.1.0-macOS-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
+curl -sSL "https://github.com/chayev/yurl/releases/download/v0.3.2/yurl-v0.3.2-macOS-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
 ```
 
-Note: You will be prompted to enter your password because of the `sudo` command.
+Note: You will be prompted to enter your password because of the `sudo` command. `0.3.2` may need to be replaced with your desired version. 
 
-## Linux and Windows Install Instructions
+## Linux Install Instructions 
 
-Coming soon. 
+### Install with Snap (recommended)
+
+Install yURL with [Snap](https://snapcraft.io/):
+
+```
+sudo snap install yurl
+```
+
+### Install using cURL 
+
+Run the below command:
+
+```
+curl -sSL "https://github.com/chayev/yurl/releases/download/v0.3.2/yurl-v0.3.2-linux-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
+```
+
+Note: You will be prompted to enter your password because of the `sudo` command. `0.3.2` may need to be replaced with your desired version.
+
+## Windows Install Instructions
+
+You could download the executable from the [releases](https://github.com/chayev/yurl/releases) page. More instructions coming soon! 
+
+We are planning on supporting [chocolatey](chocolatey.org) package manager as well.
 
 ## Usage and Example
 
@@ -34,7 +56,7 @@ Run `yurl help` for information on how to use yURL.
 Example:
 
 ```bash
-yurl validate "https://www.google.com/search?q=gothamhq"
+yurl aasa validate "https://www.google.com/search?q=gothamhq"
 ```
 
 ## Contributing
@@ -48,7 +70,7 @@ Feel free to open an issue if you have a question.
 ### Reporting Issues
 
 If you believe you have found a defect in yURL or its documentation, create an issue to report the problem.
-When reporting the issue, please provide the version of yURL in use (`yurl --version`).
+When reporting the issue, please provide the version of yURL in use (`yurl version`).
 
 ## License
 
