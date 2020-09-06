@@ -57,7 +57,15 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 	if allowUnencrypted {
 		// Try to decode the JSON right away (this assumes the file is not encrypted)
 		// If it's not encrypted, we'll just return it
-		output = append(output, evaluateAASA(result, bundleIdentifier, teamIdentifier, false)...)
+		messages, errors := evaluateAASA(result, bundleIdentifier, teamIdentifier, false)
+		if len(errors) > 0 {
+			for _, e := range errors {
+				output = append(output, fmt.Sprintf("  %s\n", e))
+			}
+			return output
+		}
+
+		output = append(output, messages...)
 
 	} else {
 		// Decrypt and evaluate file
@@ -141,14 +149,15 @@ func makeRequest(fileURL string) (*http.Response, error) {
 	return resp, nil
 }
 
-func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier string, encrypted bool) []string {
+func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier string, encrypted bool) ([]string, []error) {
 
 	var output []string
+	var formatErrors []error
 
 	jsonText, err := ioutil.ReadAll(result.Body)
 	if err != nil {
-		output = append(output, fmt.Sprintf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
-		return output
+		formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
+		return output, formatErrors
 	}
 
 	var reqResp aasaFile
@@ -157,14 +166,14 @@ func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier
 	if err != nil {
 		prettyJSON, err := json.MarshalIndent(jsonText, "", "    ")
 		if err != nil {
-			output = append(output, fmt.Sprintf("Failed to print contents with error: %w", err))
-			return output
+			formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
+			return output, formatErrors
 		}
 		output = append(output, fmt.Sprintln("JSON Validation: Fail"))
 
 		output = append(output, fmt.Sprintf("%s\n", string(prettyJSON)))
 
-		return output
+		return output, formatErrors
 	}
 
 	output = append(output, fmt.Sprintln("JSON Validation: \t\t  Pass"))
@@ -184,8 +193,8 @@ func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier
 
 		prettyJSON, err := json.MarshalIndent(reqResp, "", "    ")
 		if err != nil {
-			output = append(output, fmt.Sprintf("Failed to print contents with error: %w", err))
-			return output
+			formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
+			return output, formatErrors
 		}
 		output = append(output, fmt.Sprintf("\n%s\n", string(prettyJSON)))
 
@@ -194,10 +203,10 @@ func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier
 		for _, formatError := range formatErrors {
 			output = append(output, fmt.Sprintf("  %s\n", formatError))
 		}
-		return output
+		return output, formatErrors
 	}
 
-	return output
+	return output, formatErrors
 
 }
 
