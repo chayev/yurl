@@ -90,7 +90,7 @@ jobs:
       - run:
           name: "Install GoReleaser"
           command: |
-            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v0.142.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
+            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v0.143.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
             goreleaser --version
       - unless:
           condition: << parameters.publish >>
