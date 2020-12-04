@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"go.mozilla.org/pkcs7"
 )
 
 type detail struct {
@@ -32,32 +34,42 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 	output = append(output, messages...)
 
 	// call loadAASAContents and handle response
-	result, message, errors := loadAASAContents(cleanedDomain)
+	rawResult, message, errors := loadAASAContents(cleanedDomain)
 	if len(errors) > 0 {
 		for _, e := range errors {
 			output = append(output, fmt.Sprintf("  %s\n", e))
 		}
 		return output
 	}
-	defer result.Body.Close()
+	defer rawResult.Body.Close()
 
 	output = append(output, message...)
 
-	contentType := result.Header["Content-Type"]
+	contentType := rawResult.Header["Content-Type"]
+
+	output = append(output, fmt.Sprintf("Content-type: \t\t\t  %s \n", contentType))
 
 	isEncryptedMimeType := contentType[0] == "application/pkcs7-mime"
 	isJSONMimeType := contentType[0] == "application/json" || contentType[0] == "text/json"
 	isJSONTypeOK := allowUnencrypted && isJSONMimeType // Only ok if both the "allow" flag is true, and... it's a valid type.
 
+	result, err := ioutil.ReadAll(rawResult.Body)
+	if err != nil {
+		// formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
+		// return output, formatErrors
+		return output
+	}
+
 	if !isEncryptedMimeType && !isJSONTypeOK {
-		output = append(output, fmt.Sprintf("Invalid content-type: %s \n", contentType[0]))
-		//return nil or error
+		output = append(output, fmt.Sprintf("Invalid content-type: \t\t  %s \n", contentType[0]))
+		output = append(output, fmt.Sprint("\nIf you believe this error is invalid, please open an issue on github or email support@chayev.com and we will investigate."))
+		return output
 	}
 
 	if allowUnencrypted {
 		// Try to decode the JSON right away (this assumes the file is not encrypted)
 		// If it's not encrypted, we'll just return it
-		messages, errors := evaluateAASA(result, bundleIdentifier, teamIdentifier, false)
+		messages, errors := evaluateAASA(result, contentType, bundleIdentifier, teamIdentifier, false)
 		if len(errors) > 0 {
 			for _, e := range errors {
 				output = append(output, fmt.Sprintf("  %s\n", e))
@@ -134,7 +146,7 @@ func loadAASAContents(domain string) (*http.Response, []string, []error) {
 		formatErrors = append(formatErrors, fmt.Errorf("Error: %w", err))
 	}
 
-	formatErrors = append(formatErrors, errors.New("could not find file in either known locations"))
+	formatErrors = append(formatErrors, errors.New("It looks like this domain does not have Universal Links configured. No association file found."))
 
 	return nil, output, formatErrors
 }
@@ -149,31 +161,41 @@ func makeRequest(fileURL string) (*http.Response, error) {
 	return resp, nil
 }
 
-func evaluateAASA(result *http.Response, bundleIdentifier string, teamIdentifier string, encrypted bool) ([]string, []error) {
+func evaluateAASA(result []byte, contentType []string, bundleIdentifier string, teamIdentifier string, encrypted bool) ([]string, []error) {
 
 	var output []string
 	var formatErrors []error
 
-	jsonText, err := ioutil.ReadAll(result.Body)
-	if err != nil {
-		formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
-		return output, formatErrors
-	}
-
 	var reqResp aasaFile
 
-	err = json.Unmarshal(jsonText, &reqResp)
+	err := json.Unmarshal(result, &reqResp)
 	if err != nil {
-		prettyJSON, err := json.MarshalIndent(jsonText, "", "    ")
-		if err != nil {
-			formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
-			return output, formatErrors
+
+		if contentType[0] == "application/pkcs7-mime" {
+			jsonTextb, err := pkcs7.Parse(result)
+			if err != nil {
+				formatErrors = append(formatErrors, fmt.Errorf("PKCS7 Parse Fail: \n%w", err)) //define this better
+				return output, formatErrors
+			}
+
+			jsonText := jsonTextb.Content
+
+			err = json.Unmarshal(jsonText, &reqResp)
+		} else {
+
+			if err != nil {
+				prettyJSON, err := json.MarshalIndent(result, "", "    ")
+				if err != nil {
+					formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
+					return output, formatErrors
+				}
+				output = append(output, fmt.Sprintln("JSON Validation: Fail"))
+
+				output = append(output, fmt.Sprintf("%s\n", string(prettyJSON)))
+
+				return output, formatErrors
+			}
 		}
-		output = append(output, fmt.Sprintln("JSON Validation: Fail"))
-
-		output = append(output, fmt.Sprintf("%s\n", string(prettyJSON)))
-
-		return output, formatErrors
 	}
 
 	output = append(output, fmt.Sprintln("JSON Validation: \t\t  Pass"))
