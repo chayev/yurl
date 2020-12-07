@@ -56,7 +56,7 @@ workflows:
 jobs:
   test:
     docker:
-      - image: cimg/go:1.15
+      - image: cimg/go:1.15.6
     steps:
       - checkout
       - restore_cache:
@@ -84,13 +84,13 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/go:1.15
+      - image: cimg/go:1.15.6
     steps:
       - checkout
       - run:
           name: "Install GoReleaser"
           command: |
-            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v0.143.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
+            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v0.149.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
             goreleaser --version
       - unless:
           condition: << parameters.publish >>
@@ -117,7 +117,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/go:1.15
+      - image: cimg/go:1.15.6
     steps:
       - checkout
       - run:
