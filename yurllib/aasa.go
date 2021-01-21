@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"go.mozilla.org/pkcs7"
 )
@@ -50,7 +51,7 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 	output = append(output, fmt.Sprintf("Content-type: \t\t\t  %s \n", contentType))
 
 	isEncryptedMimeType := contentType[0] == "application/pkcs7-mime"
-	isJSONMimeType := contentType[0] == "application/json" || contentType[0] == "text/json"
+	isJSONMimeType := contentType[0] == "application/json" || contentType[0] == "text/json" || contentType[0] == "text/plain" || strings.Contains(contentType[0], "application/json") || contentType[0] == "application/octet-stream"
 	isJSONTypeOK := allowUnencrypted && isJSONMimeType // Only ok if both the "allow" flag is true, and... it's a valid type.
 
 	result, err := ioutil.ReadAll(rawResult.Body)
