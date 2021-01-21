@@ -50,9 +50,16 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 
 	output = append(output, fmt.Sprintf("Content-type: \t\t\t  %s \n", contentType))
 
-	isEncryptedMimeType := contentType[0] == "application/pkcs7-mime"
-	isJSONMimeType := contentType[0] == "application/json" || contentType[0] == "text/json" || contentType[0] == "text/plain" || strings.Contains(contentType[0], "application/json") || contentType[0] == "application/octet-stream"
-	isJSONTypeOK := allowUnencrypted && isJSONMimeType // Only ok if both the "allow" flag is true, and... it's a valid type.
+	isEncryptedMimeType := false
+	isJSONTypeOK := false
+
+	if len(contentType) > 0 {
+		isEncryptedMimeType = contentType[0] == "application/pkcs7-mime"
+		isJSONMimeType := contentType[0] == "application/json" || contentType[0] == "text/json" || contentType[0] == "text/plain" || strings.Contains(contentType[0], "application/json") || contentType[0] == "application/octet-stream"
+		isJSONTypeOK = allowUnencrypted && isJSONMimeType // Only ok if both the "allow" flag is true, and... it's a valid type.
+	} else {
+		isJSONTypeOK = true
+	}
 
 	result, err := ioutil.ReadAll(rawResult.Body)
 	if err != nil {
@@ -62,7 +69,7 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 	}
 
 	if !isEncryptedMimeType && !isJSONTypeOK {
-		output = append(output, fmt.Sprintf("Invalid content-type: \t\t  %s \n", contentType[0]))
+		output = append(output, fmt.Sprintf("Invalid content-type: \t\t  %s \n", contentType))
 		output = append(output, fmt.Sprint("\nIf you believe this error is invalid, please open an issue on github or email support@chayev.com and we will investigate."))
 		return output
 	}
