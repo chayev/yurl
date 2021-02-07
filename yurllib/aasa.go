@@ -285,7 +285,7 @@ func verifyBundleIdentifierIsPresent(content aasaFile, bundleIdentifier string, 
 
 		var arrAppids = detail.AppIDs
 		for x := 0; x < len(arrAppids); x++ {
-			if arrAppids[x] == matcher && len(detail.Paths) > 0 {
+			if arrAppids[x] == matcher {
 				return true
 			}
 		}
