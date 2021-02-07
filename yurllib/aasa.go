@@ -12,17 +12,28 @@ import (
 	"go.mozilla.org/pkcs7"
 )
 
-type component map[string]interface{}
+type component map[string]interface{} // https://developer.apple.com/documentation/bundleresources/applinks/details/components
+
+type substitutionVariable map[string][]string // https://developer.apple.com/documentation/bundleresources/applinks/substitutionvariables
+
+// https://developer.apple.com/documentation/bundleresources/applinks/defaults
+type defaultStruct struct {
+	CaseSensitive  bool `json:"caseSensitive,omitempty"`
+	PercentEncoded bool `json:"percentEncoded,omitempty"`
+}
 
 type detail struct {
-	AppID      string      `json:"appID,omitempty"`
-	Paths      []string    `json:"paths,omitempty"`
-	AppIDs     []string    `json:"appIDs,omitempty"`
-	Components []component `json:"components,omitempty"`
+	AppID      string          `json:"appID,omitempty"`
+	Paths      []string        `json:"paths,omitempty"`
+	AppIDs     []string        `json:"appIDs,omitempty"`
+	Components []component     `json:"components,omitempty"`
+	Defaults   []defaultStruct `json:"defaults,omitempty"`
 }
 type appLinks struct {
-	Apps    []string `json:"apps,omitempty"`
-	Details []detail `json:"details"`
+	Apps                  []string               `json:"apps,omitempty"`
+	Details               []detail               `json:"details"`
+	SubstitutionVariables []substitutionVariable `json:"substitutionVariables,omitempty"`
+	Defaults              []defaultStruct        `json:"defaults,omitempty"`
 }
 
 type aasaFile struct {
