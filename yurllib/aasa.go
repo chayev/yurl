@@ -76,7 +76,7 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 
 	if len(contentType) > 0 {
 		isEncryptedMimeType = contentType[0] == "application/pkcs7-mime"
-		isJSONMimeType := contentType[0] == "application/json" || contentType[0] == "text/json" || contentType[0] == "text/plain" || strings.Contains(contentType[0], "application/json") || contentType[0] == "application/octet-stream"
+		isJSONMimeType := contentType[0] == "application/json" || contentType[0] == "text/json" || contentType[0] == "text/plain" || strings.Contains(contentType[0], "application/json") || contentType[0] == "application/octet-stream" || contentType[0] == "binary/octet-stream"
 		isJSONTypeOK = allowUnencrypted && isJSONMimeType // Only ok if both the "allow" flag is true, and... it's a valid type.
 	} else {
 		isJSONTypeOK = true
