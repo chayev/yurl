@@ -26,7 +26,13 @@ type appLinks struct {
 }
 
 type aasaFile struct {
-	Applinks *appLinks `json:"applinks"`
+	Applinks             *appLinks       `json:"applinks"`
+	WebCredentials       *genericService `json:"webcredentials,omitempty"`
+	ActivityContinuation *genericService `json:"activitycontinuation,omitempty"`
+	AppClips             *genericService `json:"appclips,omitempty"`
+}
+type genericService struct {
+	Apps []string `json:"apps,omitempty"`
 }
 
 // CheckDomain : Main function used by CLI and WebApp
