@@ -12,12 +12,16 @@ import (
 	"go.mozilla.org/pkcs7"
 )
 
+type component map[string]interface{}
+
 type detail struct {
-	AppID string   `json:"appID"`
-	Paths []string `json:"paths"`
+	AppID      string      `json:"appID,omitempty"`
+	Paths      []string    `json:"paths,omitempty"`
+	AppIDs     []string    `json:"appIDs,omitempty"`
+	Components []component `json:"components,omitempty"`
 }
 type appLinks struct {
-	Apps    []string `json:"apps"`
+	Apps    []string `json:"apps,omitempty"`
 	Details []detail `json:"details"`
 }
 
@@ -251,9 +255,7 @@ func verifyJSONformat(content aasaFile) (bool, []error) {
 	}
 
 	apps := appLinks.Apps
-	if apps == nil {
-		formatErrors = append(formatErrors, errors.New("missing applinks/apps region"))
-	} else if len(apps) > 0 {
+	if len(apps) > 0 {
 		formatErrors = append(formatErrors, errors.New("the apps key must have its value be an empty array"))
 	}
 
@@ -279,6 +281,13 @@ func verifyBundleIdentifierIsPresent(content aasaFile, bundleIdentifier string, 
 		var detail = details[i]
 		if detail.AppID == matcher && len(detail.Paths) > 0 {
 			return true
+		}
+
+		var arrAppids = detail.AppIDs
+		for x := 0; x < len(arrAppids); x++ {
+			if arrAppids[x] == matcher && len(detail.Paths) > 0 {
+				return true
+			}
 		}
 	}
 
