@@ -17,23 +17,25 @@ type component map[string]interface{} // https://developer.apple.com/documentati
 type substitutionVariable map[string][]string // https://developer.apple.com/documentation/bundleresources/applinks/substitutionvariables
 
 // https://developer.apple.com/documentation/bundleresources/applinks/defaults
-type defaultStruct struct {
-	CaseSensitive  bool `json:"caseSensitive,omitempty"`
-	PercentEncoded bool `json:"percentEncoded,omitempty"`
-}
+// type defaultStruct struct {
+// 	CaseSensitive  bool `json:"caseSensitive,omitempty"`
+// 	PercentEncoded bool `json:"percentEncoded,omitempty"`
+// }
+type defaultStruct map[string]interface{}
 
 type detail struct {
-	AppID      string          `json:"appID,omitempty"`
-	Paths      []string        `json:"paths,omitempty"`
-	AppIDs     []string        `json:"appIDs,omitempty"`
-	Components []component     `json:"components,omitempty"`
-	Defaults   []defaultStruct `json:"defaults,omitempty"`
+	AppID      string        `json:"appID,omitempty"`
+	Paths      []string      `json:"paths,omitempty"`
+	AppIDs     []string      `json:"appIDs,omitempty"`
+	Components []component   `json:"components,omitempty"`
+	Defaults   defaultStruct `json:"defaults,omitempty"`
 }
+
 type appLinks struct {
 	Apps                  []string               `json:"apps,omitempty"`
 	Details               []detail               `json:"details"`
 	SubstitutionVariables []substitutionVariable `json:"substitutionVariables,omitempty"`
-	Defaults              []defaultStruct        `json:"defaults,omitempty"`
+	Defaults              defaultStruct          `json:"defaults,omitempty"`
 }
 
 type aasaFile struct {
@@ -200,7 +202,7 @@ func evaluateAASA(result []byte, contentType []string, bundleIdentifier string, 
 	err := json.Unmarshal(result, &reqResp)
 	if err != nil {
 
-		if contentType[0] == "application/pkcs7-mime" {
+		if len(contentType) > 0 && contentType[0] == "application/pkcs7-mime" {
 			jsonTextb, err := pkcs7.Parse(result)
 			if err != nil {
 				formatErrors = append(formatErrors, fmt.Errorf("PKCS7 Parse Fail: \n%w", err)) //define this better
@@ -211,7 +213,6 @@ func evaluateAASA(result []byte, contentType []string, bundleIdentifier string, 
 
 			err = json.Unmarshal(jsonText, &reqResp)
 		} else {
-
 			if err != nil {
 				prettyJSON, err := json.MarshalIndent(result, "", "    ")
 				if err != nil {
