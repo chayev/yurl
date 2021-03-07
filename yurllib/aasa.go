@@ -270,16 +270,16 @@ func verifyJSONformat(content aasaFile) (bool, []error) {
 
 	if appLinks == nil {
 		formatErrors = append(formatErrors, errors.New("missing applinks region"))
-	}
+	} else {
+		apps := appLinks.Apps
+		if len(apps) > 0 {
+			formatErrors = append(formatErrors, errors.New("the apps key must have its value be an empty array"))
+		}
 
-	apps := appLinks.Apps
-	if len(apps) > 0 {
-		formatErrors = append(formatErrors, errors.New("the apps key must have its value be an empty array"))
-	}
-
-	details := appLinks.Details
-	if details == nil {
-		formatErrors = append(formatErrors, errors.New("missing applinks/details region"))
+		details := appLinks.Details
+		if details == nil {
+			formatErrors = append(formatErrors, errors.New("missing applinks/details region"))
+		}
 	}
 
 	if len(formatErrors) > 0 {
