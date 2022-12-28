@@ -1,7 +1,7 @@
 body {
     display: flex;
     flex-direction: column;
-    background-color: #cfe2f3;
+    background-color: #7cce8b;
     height: 100%;
     text-align: center;
 }
@@ -59,11 +59,11 @@ form input[type="submit"] {
 }
 
 #results header {
-    background-color: #cfe2f3;
+    background-color: #7cce8b;
     display: flex;
     justify-content: space-between;
-    height: 56px;
-    line-height: 56px;
+    height: 70px;
+    line-height: 70px;
 }
 
 #results h1 {
@@ -134,7 +134,7 @@ pre {
 .fa-github {
     color: #333333;
     font-size: 40px;
-    line-height: 56px !important;
+    line-height: 70px !important;
 }
 
 footer, 
