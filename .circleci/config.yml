@@ -6,10 +6,6 @@ workflows:
       - test
       - build-cli
       - build-webapp
-      - build-snap:
-          name: "Build Test Snap"
-          requires:
-            - build-cli
   release:
     jobs:
       - test:
@@ -41,18 +37,7 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
           publish: true
-      - build-snap:
-          name: "Build 'stable' Snap"
-          requires:
-            - "Build CLI"
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              # Simplified SemVer regex
-              only: /^v\d+\.\d+\.\d+$/
-          publish-stable: true
-            
+
 jobs:
   test:
     docker:
