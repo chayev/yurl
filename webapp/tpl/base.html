@@ -27,6 +27,10 @@
                 <input type="submit" value="Validate" tabindex="4" />
             </form>
         </main>
-        <footer>© 2022 <a href="https://www.chayev.com" target="_blank" rel="noopener" aria-label="Michael Ibragimchayev's Personal Site">Michael Ibragimchayev</a></footer>
+        <footer>© <span id="year"></span> <a href="https://www.chayev.com" target="_blank" rel="noopener" aria-label="Michael Ibragimchayev's Personal Site">Michael Ibragimchayev</a></footer>
+        <script>
+            const today = new Date();
+            document.getElementById("year").textContent = today.getFullYear();
+        </script>
     </body>
 </html>
