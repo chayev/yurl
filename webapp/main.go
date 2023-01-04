@@ -1,9 +1,10 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"net/http"
-	"text/template"
+	"time"
 
 	"github.com/chayev/yurl/yurllib"
 )
@@ -20,16 +21,19 @@ func main() {
 
 // PageOutput : The contents and URL parameters that are exported
 type PageOutput struct {
-	Content string
-	URL     string
-	Prefix  string
-	Bundle  string
+	Content     string
+	URL         string
+	Prefix      string
+	Bundle      string
+	CurrentTime time.Time
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
 
-	t, _ := template.ParseFiles("tpl/base.html")
-	t.Execute(w, nil)
+	content := &PageOutput{CurrentTime: time.Now()}
+
+	t, _ := template.ParseFiles("tpl/home.html", "tpl/partials/header.html", "tpl/partials/footer.html")
+	t.ExecuteTemplate(w, "home.html", &content)
 }
 
 func viewResults(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +68,8 @@ func viewResults(w http.ResponseWriter, r *http.Request) {
 		content.Content += item
 	}
 
-	t, _ := template.ParseFiles("tpl/results.html")
-	t.Execute(w, &content)
+	content.CurrentTime = time.Now()
+
+	t, _ := template.ParseFiles("tpl/results.html", "tpl/partials/header.html", "tpl/partials/footer.html")
+	t.ExecuteTemplate(w, "results.html", &content)
 }
