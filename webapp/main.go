@@ -16,6 +16,8 @@ func main() {
 	log.Println("Listening on :8080...")
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/results", viewResults)
+	http.HandleFunc("/android", android)
+	http.HandleFunc("/android-results", viewResultsAndroid)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
@@ -32,7 +34,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	content := &PageOutput{CurrentTime: time.Now()}
 
-	t, _ := template.ParseFiles("tpl/home.html", "tpl/partials/header.html", "tpl/partials/footer.html")
+	t, _ := template.ParseFiles("tpl/home.html", "tpl/partials/header.html", "tpl/partials/footer.html", "tpl/partials/navToAndroid.html")
 	t.ExecuteTemplate(w, "home.html", &content)
 }
 
@@ -59,7 +61,7 @@ func viewResults(w http.ResponseWriter, r *http.Request) {
 	if url == "" {
 		output = append(output, "Enter URL to validate.")
 	} else {
-		output = yurllib.CheckDomain(url, prefix, bundle, true)
+		output = yurllib.CheckAASADomain(url, prefix, bundle, true)
 	}
 
 	content := &PageOutput{URL: url, Prefix: prefix, Bundle: bundle}
@@ -70,6 +72,52 @@ func viewResults(w http.ResponseWriter, r *http.Request) {
 
 	content.CurrentTime = time.Now()
 
-	t, _ := template.ParseFiles("tpl/results.html", "tpl/partials/header.html", "tpl/partials/footer.html")
+	t, _ := template.ParseFiles("tpl/results.html", "tpl/partials/header.html", "tpl/partials/footer.html", "tpl/partials/navToAndroid.html")
 	t.ExecuteTemplate(w, "results.html", &content)
+}
+
+func android(w http.ResponseWriter, r *http.Request) {
+
+	content := &PageOutput{CurrentTime: time.Now()}
+
+	t, _ := template.ParseFiles("tpl/android.html", "tpl/partials/header.html", "tpl/partials/footer.html", "tpl/partials/navToiOS.html")
+	t.ExecuteTemplate(w, "android.html", &content)
+}
+
+func viewResultsAndroid(w http.ResponseWriter, r *http.Request) {
+
+	var url string
+	var package_name string
+	var fingerprint string
+
+	for _, n := range r.URL.Query()["url"] {
+		url = n
+	}
+
+	for _, n := range r.URL.Query()["prefix"] {
+		package_name = n
+	}
+
+	for _, n := range r.URL.Query()["bundle"] {
+		fingerprint = n
+	}
+
+	var output []string
+
+	if url == "" {
+		output = append(output, "Enter URL to validate.")
+	} else {
+		output = yurllib.CheckAssetLinkDomain(url, package_name, fingerprint)
+	}
+
+	content := &PageOutput{URL: url, Prefix: package_name, Bundle: fingerprint}
+
+	for _, item := range output {
+		content.Content += item
+	}
+
+	content.CurrentTime = time.Now()
+
+	t, _ := template.ParseFiles("tpl/android-results.html", "tpl/partials/header.html", "tpl/partials/footer.html", "tpl/partials/navToiOS.html")
+	t.ExecuteTemplate(w, "android-results.html", &content)
 }
