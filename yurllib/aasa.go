@@ -17,10 +17,11 @@ type component map[string]interface{} // https://developer.apple.com/documentati
 type substitutionVariable map[string][]string // https://developer.apple.com/documentation/bundleresources/applinks/substitutionvariables
 
 // https://developer.apple.com/documentation/bundleresources/applinks/defaults
-// type defaultStruct struct {
-// 	CaseSensitive  bool `json:"caseSensitive,omitempty"`
-// 	PercentEncoded bool `json:"percentEncoded,omitempty"`
-// }
+//
+//	type defaultStruct struct {
+//		CaseSensitive  bool `json:"caseSensitive,omitempty"`
+//		PercentEncoded bool `json:"percentEncoded,omitempty"`
+//	}
 type defaultStruct map[string]interface{}
 
 type detail struct {
@@ -84,16 +85,16 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 		isJSONTypeOK = true
 	}
 
+	if !isEncryptedMimeType && !isJSONTypeOK {
+		output = append(output, fmt.Sprintf("Invalid content-type: \t\t  %s \n", contentType))
+		output = append(output, fmt.Sprint("\nIf you believe this error is invalid, please open an issue on github or email support@chayev.com and we will investigate."))
+		return output
+	}
+
 	result, err := ioutil.ReadAll(rawResult.Body)
 	if err != nil {
 		// formatErrors = append(formatErrors, fmt.Errorf("ioutil.ReadAll failed to parse with error: \n%w", err)) //define this better
 		// return output, formatErrors
-		return output
-	}
-
-	if !isEncryptedMimeType && !isJSONTypeOK {
-		output = append(output, fmt.Sprintf("Invalid content-type: \t\t  %s \n", contentType))
-		output = append(output, fmt.Sprint("\nIf you believe this error is invalid, please open an issue on github or email support@chayev.com and we will investigate."))
 		return output
 	}
 
