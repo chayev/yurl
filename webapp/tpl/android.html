@@ -1,0 +1,17 @@
+{{ template "header" }}
+    <body>
+        {{ template "navToiOS" }}
+        <header><a href="https://www.github.com/chayev/yurl" id="github-home" target="_blank" rel="noopener" title="Go to the GitHub project" aria-label="Go to the GitHub project"><i class="fab fa-github"></i></a></header>
+        <main>
+            <h1><span id="name">yURL</span>: Asset Links File Validator</h1>
+            <p>yURL allows you to validate whether a URL is properly configured for Android Asset Links. This allows you to check if the assetlinks.json file exists and is in the proper format as <a href="https://developers.google.com/digital-asset-links/v1/getting-started" target="_blank" rel="noopener" aria-label="Google Digital Asset Links Requirements">defined by Google</a>.</p>
+            <form method="GET" action="/android-results">
+                <input type="text" name="url" placeholder="Enter a URL test (e.g. https://app.chayev.com/xyx)" tabindex="1" />
+                <input type="text" name="prefix" placeholder="Package Name (Optional)" tabindex="2" />
+                <input type="text" name="bundle" placeholder="Package Fingerprint (Optional)" tabindex="3" />
+                <input type="submit" value="Validate" tabindex="4" />
+            </form>
+        </main>
+        {{ template "footer" . }}
+    </body>
+</html>

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"go.mozilla.org/pkcs7"
@@ -49,8 +48,8 @@ type genericService struct {
 	Apps []string `json:"apps,omitempty"`
 }
 
-// CheckDomain : Main function used by CLI and WebApp
-func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string, allowUnencrypted bool) []string {
+// CheckAASADomain : Main function used by CLI and WebApp for Apple App Site Association validation
+func CheckAASADomain(inputURL string, bundleIdentifier string, teamIdentifier string, allowUnencrypted bool) []string {
 
 	var output []string
 
@@ -118,31 +117,6 @@ func CheckDomain(inputURL string, bundleIdentifier string, teamIdentifier string
 	return output
 }
 
-func getDomain(input string) (string, []string) {
-
-	var output []string
-
-	//Clean up domains, removing scheme and path
-	parsedURL, err := url.Parse(input)
-	if err != nil {
-		output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
-	}
-
-	scheme := parsedURL.Scheme
-
-	if scheme != "https" {
-		output = append(output, fmt.Sprintf("WARNING: The URL must use HTTPS, trying HTTPS instead. \n\n"))
-
-		parsedURL.Scheme = "https"
-		parsedURL, err = url.Parse(parsedURL.String())
-		if err != nil {
-			output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
-		}
-	}
-
-	return parsedURL.Host, output
-}
-
 func loadAASAContents(domain string) (*http.Response, []string, []error) {
 
 	var output []string
@@ -183,16 +157,6 @@ func loadAASAContents(domain string) (*http.Response, []string, []error) {
 	return nil, output, formatErrors
 }
 
-func makeRequest(fileURL string) (*http.Response, error) {
-
-	resp, err := http.Get(fileURL)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
 func evaluateAASA(result []byte, contentType []string, bundleIdentifier string, teamIdentifier string, encrypted bool) ([]string, []error) {
 
 	var output []string
@@ -231,7 +195,7 @@ func evaluateAASA(result []byte, contentType []string, bundleIdentifier string, 
 
 	output = append(output, fmt.Sprintln("JSON Validation: \t\t  Pass"))
 
-	validJSON, formatErrors := verifyJSONformat(reqResp)
+	validJSON, formatErrors := verifyAASAJSONformat(reqResp)
 
 	if validJSON {
 		output = append(output, fmt.Sprintln("JSON Schema: \t\t\t  Pass"))
@@ -263,7 +227,7 @@ func evaluateAASA(result []byte, contentType []string, bundleIdentifier string, 
 
 }
 
-func verifyJSONformat(content aasaFile) (bool, []error) {
+func verifyAASAJSONformat(content aasaFile) (bool, []error) {
 
 	appLinks := content.Applinks
 
