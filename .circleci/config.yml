@@ -26,6 +26,7 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
           publish: true
+          context: main
       - build-webapp:
           name: "Build Webapp"
           requires:
