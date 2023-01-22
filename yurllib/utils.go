@@ -40,3 +40,23 @@ func makeRequest(fileURL string) (*http.Response, error) {
 
 	return resp, nil
 }
+
+func CompareStrings(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func OutputStatus(output []string, name string, pass bool) []string{
+	if pass {		
+		return append(output, fmt.Sprintf("%s: Pass\n", name))
+	} else {
+		return append(output, fmt.Sprintf("%s: Fail\n", name))
+	}
+}

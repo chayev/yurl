@@ -114,6 +114,12 @@ func CheckAASADomain(inputURL string, bundleIdentifier string, teamIdentifier st
 		// Decrypt and evaluate file
 	}
 
+	// Add CDN Debug Headers provided by apple to output
+	cdnDebugHeaders := getAppleCDNDebugHeaders(cleanedDomain, string(result)) 	
+	cdnDebugHeaders = evaluateAppleCDNStatus(cdnDebugHeaders)
+	output = appendCDNDebugHeaders(output, cdnDebugHeaders)		
+		
+
 	return output
 }
 
@@ -276,3 +282,137 @@ func verifyBundleIdentifierIsPresent(content aasaFile, bundleIdentifier string, 
 
 	return false
 }
+
+type appleCDNDebugHeaders struct {
+
+	cdnPath string
+	directFileBody string
+	cachedFileBody string
+	cdnStatusCode int
+
+	CDNQuerySuccess bool `json:"CDNQuerySuccess"`
+	NoAppleFailureMessage bool `json:"AppleFailure"`
+	ASACacheUpToDate bool `json:"ASACacheUpToDate"`
+
+	Failure bool `json:"Failure"`
+
+	AppleFailureDetails string `json:"Apple-Failure-Details"` 
+	AppleFailureReason string `json:"Apple-Failure-Reason"` 
+	AppleFrom string `json:"Apple-From"` 
+	AppleTryDirect string `json:"Apple-Try-Direct"` 
+	CacheControl string `json:"Cache-Control"` 
+	ContentLength string `json:"Content-Length"` 
+	Date string `json:"Date"` 
+	Expires string `json:"Expires"` 
+	Via string `json:"Via"` 
+	Age string `json:"Age"` 
+}
+
+
+func readAppleCDNDebugHeaders(cdnResp *http.Response,cdnPath string, directFileBody string) (appleCDNDebugHeaders , error) {
+	result, err := ioutil.ReadAll(cdnResp.Body)
+	cdnBody := ""
+	if(err==nil){
+		cdnBody = string(result)
+	}
+
+	debugHeaders := appleCDNDebugHeaders{
+
+		cdnPath : cdnPath ,
+		directFileBody : directFileBody,
+		cachedFileBody : cdnBody,
+		cdnStatusCode :cdnResp.StatusCode,
+	
+		CDNQuerySuccess: cdnResp.StatusCode<=200 && cdnResp.StatusCode<300,
+		NoAppleFailureMessage: cdnResp.Header.Get("Apple-Failure-Details")=="",
+		ASACacheUpToDate:true,
+
+		Failure: err != nil,		
+
+		AppleFailureDetails: cdnResp.Header.Get("Apple-Failure-Details"),
+		AppleFailureReason: cdnResp.Header.Get("Apple-Failure-Reason"),
+		AppleFrom: cdnResp.Header.Get("Apple-From"),
+		AppleTryDirect: cdnResp.Header.Get("Apple-Try-Direct"),
+		CacheControl: cdnResp.Header.Get("Cache-Control"),
+		ContentLength: cdnResp.Header.Get("Content-Length"),
+		Date: cdnResp.Header.Get("Date"),
+		Expires: cdnResp.Header.Get("Expires"),
+		Via: cdnResp.Header.Get("Via"),
+		Age: cdnResp.Header.Get("Age"),		
+	}
+
+	return debugHeaders, err
+}
+
+func getAppleCDNDebugHeaders(ASAdomain string, directFileBody string) (cdnDebugHeaders appleCDNDebugHeaders) {
+	cdnPath := "https://app-site-association.cdn-apple.com/a/v1/" + ASAdomain
+	cdnResp, err := makeRequest(cdnPath)
+
+	cdnDebugHeaders, readErr :=  readAppleCDNDebugHeaders(cdnResp,cdnPath,directFileBody  )
+	
+	if err != nil || readErr != nil {
+		cdnDebugHeaders.Failure = true
+		cdnDebugHeaders.CDNQuerySuccess = false
+	}
+
+	return cdnDebugHeaders
+}
+
+func evaluateAppleCDNStatus(debugHeaders appleCDNDebugHeaders) (appleCDNDebugHeaders) {
+	pass := true;
+	if debugHeaders.cdnStatusCode != 200 {
+		
+		pass = false
+	} 
+	
+	if debugHeaders.cachedFileBody != debugHeaders.directFileBody {
+		
+		debugHeaders.ASACacheUpToDate = false;
+		pass = false
+	} 
+	debugHeaders.Failure = !pass;
+	return debugHeaders;
+}
+
+func appendCDNDebugHeaders(output []string, debugHeaders appleCDNDebugHeaders) []string {
+
+	output = append(output, fmt.Sprintf("\n\nCDN Cache URL: \t%s\n\n", debugHeaders.cdnPath))
+
+	output =OutputStatus(output, "Apple CDN Cache Checks", !debugHeaders.Failure)
+
+	output = OutputStatus(output, "\tCDN Cache Query Success", debugHeaders.CDNQuerySuccess)
+
+
+	if(!debugHeaders.CDNQuerySuccess){
+	output = append(output, fmt.Sprintf("\t\tStatus Code not 200-299: %d\n", debugHeaders.cdnStatusCode))
+	}
+
+	output =OutputStatus(output, "\tNo Apple Failure Message", debugHeaders.NoAppleFailureMessage)
+	if(!debugHeaders.NoAppleFailureMessage){
+		output = append(output, fmt.Sprintf("\t\tApple has provided a failure reason: %s\n", debugHeaders.AppleFailureReason))
+	}
+
+	output =OutputStatus(output, "\tApple CDN Cache Up to Date", debugHeaders.ASACacheUpToDate)
+	if(!debugHeaders.ASACacheUpToDate){
+		 output = append(output, fmt.Sprintln("\t\tFile cached by Apple CDN does not match direct file"))
+		 output = append(output, fmt.Sprintf("CDN Cached Contents:\n\n%s\n", debugHeaders.cachedFileBody))
+
+	}
+	
+	OutputStatus(output, "Apple CDN Caching Status", !debugHeaders.Failure)
+
+	output = append(output, fmt.Sprintln("\n\nApple CDN Debug Headers:"))
+	output = append(output, fmt.Sprintf("\tApple-Failure-Details: \t%s\n", debugHeaders.AppleFailureDetails))
+	output = append(output, fmt.Sprintf("\tApple-Failure-Reason: \t%s\n", debugHeaders.AppleFailureReason))
+	output = append(output, fmt.Sprintf("\tApple-From: \t\t\t%s\n", debugHeaders.AppleFrom))
+	output = append(output, fmt.Sprintf("\tApple-Try-Direct: \t\t%s\n", debugHeaders.AppleTryDirect))
+	output = append(output, fmt.Sprintf("\tCache-Control: \t\t\t%s\n", debugHeaders.CacheControl))
+	output = append(output, fmt.Sprintf("\tAge: \t\t\t\t\t%s\n", debugHeaders.Age))
+	output = append(output, fmt.Sprintf("\tContent-Length: \t\t%s\n", debugHeaders.ContentLength))
+	output = append(output, fmt.Sprintf("\tDate: \t\t\t\t\t%s\n", debugHeaders.Date))
+	output = append(output, fmt.Sprintf("\tExpires: \t\t\t\t%s\n", debugHeaders.Expires))
+	output = append(output, fmt.Sprintf("\tVia: \t\t\t\t\t%s\n", debugHeaders.Via))
+
+	return output
+}
+
