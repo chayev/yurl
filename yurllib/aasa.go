@@ -102,9 +102,12 @@ func CheckAASADomain(inputURL string, bundleIdentifier string, teamIdentifier st
 		// If it's not encrypted, we'll just return it
 		messages, errors := evaluateAASA(result, contentType, bundleIdentifier, teamIdentifier, false)
 		if len(errors) > 0 {
+			output = append(output, fmt.Sprintln("\nErrors:"))
 			for _, e := range errors {
-				output = append(output, fmt.Sprintf("  %s\n", e))
+				output = append(output, fmt.Sprintf("  - %s\n", e))
 			}
+			output = append(output, fmt.Sprintln("\nFile Contents:"))
+			output = append(output, fmt.Sprint(string(result)))
 			return output
 		}
 
@@ -115,10 +118,9 @@ func CheckAASADomain(inputURL string, bundleIdentifier string, teamIdentifier st
 	}
 
 	// Add CDN Debug Headers provided by apple to output
-	cdnDebugHeaders := getAppleCDNDebugHeaders(cleanedDomain, string(result)) 	
+	cdnDebugHeaders := getAppleCDNDebugHeaders(cleanedDomain, string(result))
 	cdnDebugHeaders = evaluateAppleCDNStatus(cdnDebugHeaders)
-	output = appendCDNDebugHeaders(output, cdnDebugHeaders)		
-		
+	output = appendCDNDebugHeaders(output, cdnDebugHeaders)
 
 	return output
 }
@@ -131,6 +133,14 @@ func loadAASAContents(domain string) (*http.Response, []string, []error) {
 
 	wellKnownPath := "https://" + domain + "/.well-known/apple-app-site-association"
 	aasaPath := "https://" + domain + "/apple-app-site-association"
+
+	// wellKnownPath = "https://chayev.github.io/webpage-sandbox/apple-app-site-association.p7m"
+	// wellKnownPath = "https://chayev.github.io/webpage-sandbox/apple-app-site-association.json"
+	// wellKnownPath = "https://chayev.github.io/webpage-sandbox/apple-app-site-association-appsRegionNotEmpty.json"
+	// wellKnownPath = "https://chayev.github.io/webpage-sandbox/apple-app-site-association-missingAppClips.json"
+	// wellKnownPath = "https://chayev.github.io/webpage-sandbox/apple-app-site-association-missingAppID.json"
+	// wellKnownPath = "https://chayev.github.io/webpage-sandbox/apple-app-site-association-missingDetails.json"
+	// wellKnownPath = "https://chayev.github.io/webpage-sandbox/apple-app-site-association-missingPaths.json"
 
 	resp, err := makeRequest(wellKnownPath)
 	if err == nil {
@@ -284,61 +294,59 @@ func verifyBundleIdentifierIsPresent(content aasaFile, bundleIdentifier string, 
 }
 
 type appleCDNDebugHeaders struct {
-
-	cdnPath string
+	cdnPath        string
 	directFileBody string
 	cachedFileBody string
-	cdnStatusCode int
+	cdnStatusCode  int
 
-	CDNQuerySuccess bool `json:"CDNQuerySuccess"`
+	CDNQuerySuccess       bool `json:"CDNQuerySuccess"`
 	NoAppleFailureMessage bool `json:"AppleFailure"`
-	ASACacheUpToDate bool `json:"ASACacheUpToDate"`
+	ASACacheUpToDate      bool `json:"ASACacheUpToDate"`
 
 	Failure bool `json:"Failure"`
 
-	AppleFailureDetails string `json:"Apple-Failure-Details"` 
-	AppleFailureReason string `json:"Apple-Failure-Reason"` 
-	AppleFrom string `json:"Apple-From"` 
-	AppleTryDirect string `json:"Apple-Try-Direct"` 
-	CacheControl string `json:"Cache-Control"` 
-	ContentLength string `json:"Content-Length"` 
-	Date string `json:"Date"` 
-	Expires string `json:"Expires"` 
-	Via string `json:"Via"` 
-	Age string `json:"Age"` 
+	AppleFailureDetails string `json:"Apple-Failure-Details"`
+	AppleFailureReason  string `json:"Apple-Failure-Reason"`
+	AppleFrom           string `json:"Apple-From"`
+	AppleTryDirect      string `json:"Apple-Try-Direct"`
+	CacheControl        string `json:"Cache-Control"`
+	ContentLength       string `json:"Content-Length"`
+	Date                string `json:"Date"`
+	Expires             string `json:"Expires"`
+	Via                 string `json:"Via"`
+	Age                 string `json:"Age"`
 }
 
-
-func readAppleCDNDebugHeaders(cdnResp *http.Response,cdnPath string, directFileBody string) (appleCDNDebugHeaders , error) {
+func readAppleCDNDebugHeaders(cdnResp *http.Response, cdnPath string, directFileBody string) (appleCDNDebugHeaders, error) {
 	result, err := ioutil.ReadAll(cdnResp.Body)
 	cdnBody := ""
-	if(err==nil){
+	if err == nil {
 		cdnBody = string(result)
 	}
 
 	debugHeaders := appleCDNDebugHeaders{
 
-		cdnPath : cdnPath ,
-		directFileBody : directFileBody,
-		cachedFileBody : cdnBody,
-		cdnStatusCode :cdnResp.StatusCode,
-	
-		CDNQuerySuccess: cdnResp.StatusCode<=200 && cdnResp.StatusCode<300,
-		NoAppleFailureMessage: cdnResp.Header.Get("Apple-Failure-Details")=="",
-		ASACacheUpToDate:true,
+		cdnPath:        cdnPath,
+		directFileBody: directFileBody,
+		cachedFileBody: cdnBody,
+		cdnStatusCode:  cdnResp.StatusCode,
 
-		Failure: err != nil,		
+		CDNQuerySuccess:       cdnResp.StatusCode <= 200 && cdnResp.StatusCode < 300,
+		NoAppleFailureMessage: cdnResp.Header.Get("Apple-Failure-Details") == "",
+		ASACacheUpToDate:      true,
+
+		Failure: err != nil,
 
 		AppleFailureDetails: cdnResp.Header.Get("Apple-Failure-Details"),
-		AppleFailureReason: cdnResp.Header.Get("Apple-Failure-Reason"),
-		AppleFrom: cdnResp.Header.Get("Apple-From"),
-		AppleTryDirect: cdnResp.Header.Get("Apple-Try-Direct"),
-		CacheControl: cdnResp.Header.Get("Cache-Control"),
-		ContentLength: cdnResp.Header.Get("Content-Length"),
-		Date: cdnResp.Header.Get("Date"),
-		Expires: cdnResp.Header.Get("Expires"),
-		Via: cdnResp.Header.Get("Via"),
-		Age: cdnResp.Header.Get("Age"),		
+		AppleFailureReason:  cdnResp.Header.Get("Apple-Failure-Reason"),
+		AppleFrom:           cdnResp.Header.Get("Apple-From"),
+		AppleTryDirect:      cdnResp.Header.Get("Apple-Try-Direct"),
+		CacheControl:        cdnResp.Header.Get("Cache-Control"),
+		ContentLength:       cdnResp.Header.Get("Content-Length"),
+		Date:                cdnResp.Header.Get("Date"),
+		Expires:             cdnResp.Header.Get("Expires"),
+		Via:                 cdnResp.Header.Get("Via"),
+		Age:                 cdnResp.Header.Get("Age"),
 	}
 
 	return debugHeaders, err
@@ -348,8 +356,8 @@ func getAppleCDNDebugHeaders(ASAdomain string, directFileBody string) (cdnDebugH
 	cdnPath := "https://app-site-association.cdn-apple.com/a/v1/" + ASAdomain
 	cdnResp, err := makeRequest(cdnPath)
 
-	cdnDebugHeaders, readErr :=  readAppleCDNDebugHeaders(cdnResp,cdnPath,directFileBody  )
-	
+	cdnDebugHeaders, readErr := readAppleCDNDebugHeaders(cdnResp, cdnPath, directFileBody)
+
 	if err != nil || readErr != nil {
 		cdnDebugHeaders.Failure = true
 		cdnDebugHeaders.CDNQuerySuccess = false
@@ -358,47 +366,46 @@ func getAppleCDNDebugHeaders(ASAdomain string, directFileBody string) (cdnDebugH
 	return cdnDebugHeaders
 }
 
-func evaluateAppleCDNStatus(debugHeaders appleCDNDebugHeaders) (appleCDNDebugHeaders) {
-	pass := true;
+func evaluateAppleCDNStatus(debugHeaders appleCDNDebugHeaders) appleCDNDebugHeaders {
+	pass := true
 	if debugHeaders.cdnStatusCode != 200 {
-		
+
 		pass = false
-	} 
-	
+	}
+
 	if debugHeaders.cachedFileBody != debugHeaders.directFileBody {
-		
-		debugHeaders.ASACacheUpToDate = false;
+
+		debugHeaders.ASACacheUpToDate = false
 		pass = false
-	} 
-	debugHeaders.Failure = !pass;
-	return debugHeaders;
+	}
+	debugHeaders.Failure = !pass
+	return debugHeaders
 }
 
 func appendCDNDebugHeaders(output []string, debugHeaders appleCDNDebugHeaders) []string {
 
 	output = append(output, fmt.Sprintf("\n\nCDN Cache URL: \t%s\n\n", debugHeaders.cdnPath))
 
-	output =OutputStatus(output, "Apple CDN Cache Checks", !debugHeaders.Failure)
+	output = OutputStatus(output, "Apple CDN Cache Checks", !debugHeaders.Failure)
 
 	output = OutputStatus(output, "\tCDN Cache Query Success", debugHeaders.CDNQuerySuccess)
 
-
-	if(!debugHeaders.CDNQuerySuccess){
-	output = append(output, fmt.Sprintf("\t\tStatus Code not 200-299: %d\n", debugHeaders.cdnStatusCode))
+	if !debugHeaders.CDNQuerySuccess {
+		output = append(output, fmt.Sprintf("\t\tStatus Code not 200-299: %d\n", debugHeaders.cdnStatusCode))
 	}
 
-	output =OutputStatus(output, "\tNo Apple Failure Message", debugHeaders.NoAppleFailureMessage)
-	if(!debugHeaders.NoAppleFailureMessage){
+	output = OutputStatus(output, "\tNo Apple Failure Message", debugHeaders.NoAppleFailureMessage)
+	if !debugHeaders.NoAppleFailureMessage {
 		output = append(output, fmt.Sprintf("\t\tApple has provided a failure reason: %s\n", debugHeaders.AppleFailureReason))
 	}
 
-	output =OutputStatus(output, "\tApple CDN Cache Up to Date", debugHeaders.ASACacheUpToDate)
-	if(!debugHeaders.ASACacheUpToDate){
-		 output = append(output, fmt.Sprintln("\t\tFile cached by Apple CDN does not match direct file"))
-		 output = append(output, fmt.Sprintf("CDN Cached Contents:\n\n%s\n", debugHeaders.cachedFileBody))
+	output = OutputStatus(output, "\tApple CDN Cache Up to Date", debugHeaders.ASACacheUpToDate)
+	if !debugHeaders.ASACacheUpToDate {
+		output = append(output, fmt.Sprintln("\t\tFile cached by Apple CDN does not match direct file"))
+		output = append(output, fmt.Sprintf("CDN Cached Contents:\n\n%s\n", debugHeaders.cachedFileBody))
 
 	}
-	
+
 	OutputStatus(output, "Apple CDN Caching Status", !debugHeaders.Failure)
 
 	output = append(output, fmt.Sprintln("\n\nApple CDN Debug Headers:"))
@@ -415,4 +422,3 @@ func appendCDNDebugHeaders(output []string, debugHeaders appleCDNDebugHeaders) [
 
 	return output
 }
-
