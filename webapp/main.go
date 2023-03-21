@@ -10,16 +10,32 @@ import (
 )
 
 func main() {
+	// Serve static files from the "static" directory
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	// Route requests to their corresponding handlers
+	http.HandleFunc("/", handler)                    // Home page
+	http.HandleFunc("/android", handler)             // Android validation page
+	http.HandleFunc("/results", viewResults)         // Validation results page for iOS
+	http.HandleFunc("/android-results", viewResults) // Validation results page for Android
+
+	// Start the HTTP server
 	log.Println("Listening on :8080...")
-	http.HandleFunc("/", handler)
-	http.HandleFunc("/android", handler)
-	http.HandleFunc("/results", viewResults)
-	http.HandleFunc("/android-results", viewResults)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
+
+// Initialize the templates on program start-up
+var templates = template.Must(template.ParseFiles(
+	"tpl/android.html",
+	"tpl/home.html",
+	"tpl/results.html",
+	"tpl/android-results.html",
+	"tpl/partials/header.html",
+	"tpl/partials/footer.html",
+	"tpl/partials/navToAndroid.html",
+	"tpl/partials/navToiOS.html",
+))
 
 // PageOutput : The contents and URL parameters that are exported
 type PageOutput struct {
@@ -30,8 +46,9 @@ type PageOutput struct {
 	CurrentTime time.Time
 }
 
+// Handler function for the home and Android validation pages
 func handler(w http.ResponseWriter, r *http.Request) {
-
+	// Initialize PageOutput with the current time
 	content := &PageOutput{CurrentTime: time.Now()}
 
 	// Determine if the request is for Android validation
@@ -44,12 +61,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		templateName = "home.html"
 	}
 
-	t, _ := template.ParseFiles("tpl/"+templateName, "tpl/partials/header.html", "tpl/partials/footer.html", "tpl/partials/navToAndroid.html", "tpl/partials/navToiOS.html")
-	t.ExecuteTemplate(w, templateName, &content)
+	// Render the template and handle errors
+	err := templates.ExecuteTemplate(w, templateName, content)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+	}
 }
 
+// Handler function for the iOS and Android validation results pages
 func viewResults(w http.ResponseWriter, r *http.Request) {
-
 	var url string
 	var prefix string
 	var bundle string
@@ -74,15 +95,17 @@ func viewResults(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get URL, prefix, and bundle parameters from form data
-	url = r.Form.Get("url")
-	prefix = r.Form.Get("prefix")
-	bundle = r.Form.Get("bundle")
+	url = r.FormValue("url")
+	prefix = r.FormValue("prefix")
+	bundle = r.FormValue("bundle")
 
 	var output []string
 
+	// Check if the URL parameter is empty, if so add a message to the output
 	if url == "" {
 		output = append(output, "Enter URL to validate.")
 	} else {
+		// Call the appropriate validation function based on the isAndroid boolean
 		if isAndroid {
 			output = yurllib.CheckAssetLinkDomain(url, prefix, bundle)
 		} else {
@@ -90,23 +113,30 @@ func viewResults(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Initialize the PageOutput struct with the URL, prefix, and bundle
 	content := &PageOutput{URL: url, Prefix: prefix, Bundle: bundle}
 
+	// Add each item in the output slice to the PageOutput struct's Content field
 	for _, item := range output {
 		content.Content += item
 	}
 
+	// Set the CurrentTime field of the PageOutput struct to the current time
 	content.CurrentTime = time.Now()
 
 	var templateName string
 
+	// Determine which template to use based on the isAndroid boolean
 	if isAndroid {
 		templateName = "android-results.html"
 	} else {
 		templateName = "results.html"
 	}
 
-	t, _ := template.ParseFiles("tpl/"+templateName, "tpl/partials/header.html", "tpl/partials/footer.html", "tpl/partials/navToAndroid.html", "tpl/partials/navToiOS.html")
-
-	t.ExecuteTemplate(w, templateName, &content)
+	// Render the template and handle errors
+	err = templates.ExecuteTemplate(w, templateName, content)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+	}
 }
