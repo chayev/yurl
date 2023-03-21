@@ -1,9 +1,20 @@
 body {
     display: flex;
     flex-direction: column;
-    background-color: #7cce8b;
     height: 100%;
     text-align: center;
+}
+
+.home {
+    background-color: #f3f3f3; 
+}
+
+.ios {
+    background-color: #5FC9F8; 
+}
+
+.android {
+    background-color: #7cce8b; 
 }
 
 header {
@@ -19,6 +30,13 @@ main {
     margin: 0 auto;
     width: 60%;
     max-width: 800px;
+}
+
+#home {
+    padding: 30px;
+    background-color: #c5c5c5;
+    border: 2px solid #333333;
+    border-radius: 25px;
 }
 
 #name {
@@ -39,6 +57,8 @@ form input {
 form input[type="text"] {
     padding: 5px;
     height: 40px;
+    border: 2px solid #333333;
+    border-radius: 14px;
 }
 
 form input[type="submit"] {
@@ -47,6 +67,8 @@ form input[type="submit"] {
     padding: 6px;
     height: 40px;
     color: #ffffff;
+    border-radius: 14px;
+    margin-top: 10px;
 }
 
 #results {
@@ -59,7 +81,6 @@ form input[type="submit"] {
 }
 
 #results header {
-    background-color: #7cce8b;
     display: flex;
     justify-content: space-between;
     height: 70px;
@@ -106,6 +127,18 @@ form input[type="submit"] {
     font-size: small;
     font-weight: bold;
     padding-left: 4px;
+}
+
+.home {
+    background-color: #f3f3f3; 
+}
+
+.ios {
+    background-color: #5FC9F8; 
+}
+
+.android {
+    background-color: #7cce8b; 
 }
 
 @media (min-width: 881px) {
@@ -167,4 +200,78 @@ footer a {
         padding-left: 15px;
         padding-right: 15px;
     }
+}
+
+/* Below here for toggle styles on home page */
+
+input[type=checkbox] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    position: absolute;
+    right: -2000px;
+}
+
+#toggle {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 80px;
+    height: 40px;
+    background: #5FC9F8;
+    display: block;
+    border-radius: 40px;
+    border: 2px solid #333333;
+    position: relative;
+}
+
+#toggle:after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 26px;
+    height: 26px;
+    background: #fff;
+    border-radius: 30px;
+    transition: 0.3s;
+}
+
+input:checked+#toggle {
+    background: #7cce8b;
+}
+
+input:checked+#toggle:after {
+    left: calc(100% - 5px);
+    transform: translateX(-100%);
+}
+
+#toggle:active:after {
+    width: 45px;
+}
+
+#toggle-container {
+    display: flex; 
+    justify-content: center;
+}
+
+#toggle-wrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 220px;
+    margin: 12px;
+}
+
+.toggle-labels {
+    width:70px;
+    font-weight: bold;
+    padding: 4px;
+}
+
+#toogle-label-left {
+    text-align: right;
+}
+
+#toggle-label-right {
+    text-align: left;
 }
