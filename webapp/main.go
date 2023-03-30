@@ -15,10 +15,11 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Route requests to their corresponding handlers
-	http.HandleFunc("/", handler)                    // Home page
-	http.HandleFunc("/android", handler)             // Android validation page
-	http.HandleFunc("/results", viewResults)         // Validation results page for iOS
-	http.HandleFunc("/android-results", viewResults) // Validation results page for Android
+	http.HandleFunc("/", homeHandler)                       // Home Page
+	http.HandleFunc("/ios", formHandler)                    // iOS validation page
+	http.HandleFunc("/android", formHandler)                // Android validation page
+	http.HandleFunc("/ios-results", viewResultsHandler)     // Validation results page for iOS
+	http.HandleFunc("/android-results", viewResultsHandler) // Validation results page for Android
 
 	// Start the HTTP server
 	log.Println("Listening on :8080...")
@@ -27,9 +28,10 @@ func main() {
 
 // Initialize the templates on program start-up
 var templates = template.Must(template.ParseFiles(
-	"tpl/android.html",
 	"tpl/home.html",
-	"tpl/results.html",
+	"tpl/ios.html",
+	"tpl/ios-results.html",
+	"tpl/android.html",
 	"tpl/android-results.html",
 	"tpl/partials/header.html",
 	"tpl/partials/footer.html",
@@ -46,8 +48,21 @@ type PageOutput struct {
 	CurrentTime time.Time
 }
 
-// Handler function for the home and Android validation pages
-func handler(w http.ResponseWriter, r *http.Request) {
+// Handler function for the home pages
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	// Initialize PageOutput with the current time
+	content := &PageOutput{CurrentTime: time.Now()}
+
+	// Render the template and handle errors
+	err := templates.ExecuteTemplate(w, "home.html", content)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+	}
+}
+
+// Handler function for the iOS and Android validation pages
+func formHandler(w http.ResponseWriter, r *http.Request) {
 	// Initialize PageOutput with the current time
 	content := &PageOutput{CurrentTime: time.Now()}
 
@@ -58,7 +73,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if isAndroid {
 		templateName = "android.html"
 	} else {
-		templateName = "home.html"
+		templateName = "ios.html"
 	}
 
 	// Render the template and handle errors
@@ -70,14 +85,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handler function for the iOS and Android validation results pages
-func viewResults(w http.ResponseWriter, r *http.Request) {
+func viewResultsHandler(w http.ResponseWriter, r *http.Request) {
 	var url string
 	var prefix string
 	var bundle string
 	var isAndroid bool
 
 	// Determine if the request is for iOS or Android validation
-	if r.URL.Path == "/results" {
+	if r.URL.Path == "/ios-results" {
 		isAndroid = false
 	} else if r.URL.Path == "/android-results" {
 		isAndroid = true
@@ -130,7 +145,7 @@ func viewResults(w http.ResponseWriter, r *http.Request) {
 	if isAndroid {
 		templateName = "android-results.html"
 	} else {
-		templateName = "results.html"
+		templateName = "ios-results.html"
 	}
 
 	// Render the template and handle errors
