@@ -2,7 +2,7 @@
 
 [![CircleCI Build Status](https://circleci.com/gh/chayev/yurl.svg?style=shield)](https://circleci.com/gh/chayev/yurl) [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/chayev/yurl/main/LICENSE)
 
-yURL is a CLI (Command-Line Interface) and [webapp](https://yurl.chayev.com/) that allows you to validate whether a URL is properly configured for Universal Links. This allows you to check if the apple-app-site-association (AASA) file exists and is in the proper format as [defined by Apple](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
+yURL is a CLI (Command-Line Interface) and [webapp](https://yurl.chayev.com/) that allows you to validate whether a URL is properly configured for Universal Links and App Links. This allows you to check if the apple-app-site-association (AASA) and assetlinks.json files exist and are in the proper format as defined by [Apple](https://developer.apple.com/documentation/safariservices/supporting_associated_domains) and [Google](https://developers.google.com/digital-asset-links/v1/getting-started).
 
 ## macOS Install Instructions
 
@@ -19,10 +19,10 @@ brew install chayev/tap/yurl
 Run the below command:
 
 ```
-curl -sSL "https://github.com/chayev/yurl/releases/download/v0.3.2/yurl-v0.3.2-macOS-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
+curl -sSL "https://github.com/chayev/yurl/releases/download/v0.7.3/yurl-v0.7.3-macos-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
 ```
 
-Note: You will be prompted to enter your password because of the `sudo` command. `0.3.2` may need to be replaced with your desired version.
+Note: You will be prompted to enter your password because of the `sudo` command. `0.7.3` may need to be replaced with your desired version.
 
 ## Linux Install Instructions
 
@@ -31,10 +31,10 @@ Note: You will be prompted to enter your password because of the `sudo` command.
 Run the below command:
 
 ```
-curl -sSL "https://github.com/chayev/yurl/releases/download/v0.3.2/yurl-v0.3.2-linux-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
+curl -sSL "https://github.com/chayev/yurl/releases/download/v0.7.3/yurl-v0.7.3-linux-amd64.tar.gz" | sudo tar -xz -C /usr/local/bin yurl
 ```
 
-Note: You will be prompted to enter your password because of the `sudo` command. `0.3.2` may need to be replaced with your desired version.
+Note: You will be prompted to enter your password because of the `sudo` command. `0.7.3` may need to be replaced with your desired version.
 
 ### Install with Snap (deprecated)
 
@@ -56,8 +56,16 @@ Run `yurl help` for information on how to use yURL.
 
 Example:
 
+To validate the Apple App Site Association (AASA) file run the following:
+
 ```bash
-yurl aasa validate "https://www.google.com/search?q=gothamhq"
+yurl aasa validate suadeo.onelink.me
+```
+
+To validate the Android assetlinks.json file run the following:
+
+```bash
+yurl assetlink validate suadeo.onelink.me
 ```
 
 ## Contributing

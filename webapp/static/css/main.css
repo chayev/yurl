@@ -62,7 +62,6 @@ form input[type="text"] {
 }
 
 form input[type="submit"] {
-    border-radius: 5px;
     background-color: #333333;
     padding: 6px;
     height: 40px;
@@ -127,18 +126,6 @@ form input[type="submit"] {
     font-size: small;
     font-weight: bold;
     padding-left: 4px;
-}
-
-.home {
-    background-color: #f3f3f3; 
-}
-
-.ios {
-    background-color: #5FC9F8; 
-}
-
-.android {
-    background-color: #7cce8b; 
 }
 
 @media (min-width: 881px) {
