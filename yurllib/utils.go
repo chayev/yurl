@@ -18,14 +18,14 @@ func getDomain(input string) (string, []string) {
 
 	scheme := parsedURL.Scheme
 
-	if scheme != "https" {
-		output = append(output, fmt.Sprintf("WARNING: The URL must use HTTPS, trying HTTPS instead. \n\n"))
-
-		parsedURL.Scheme = "https"
-		parsedURL, err = url.Parse(parsedURL.String())
-		if err != nil {
-			output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
-		}
+	if scheme != "https" && scheme != "" {
+		output = append(output, fmt.Sprintf("WARNING: The URL must use HTTPS, changing the protocol to HTTPS instead. \n\n"))
+	}
+	
+	parsedURL.Scheme = "https"
+	parsedURL, err = url.Parse(parsedURL.String())
+	if err != nil {
+		output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
 	}
 
 	return parsedURL.Host, output
