@@ -19,9 +19,11 @@
                 <a class="wide" href="#" onclick="document.getElementById('assetlink').submit()" tabindex="4"><i class="fas fa-redo-alt"></i></a>
                 <input class="mini" type="submit" value="Validate" tabindex="-1" />
             </form>
-            <h2>Results:</h2>
+            <div class="title">
+                <h2>Results:</h2>
+                {{ template "copyLink" }}
+            </div>
             <pre>{{ .Content }}</pre>
-            {{ template "copyLink" }}
         </main>
         {{ template "footer" . }}
     </body>
