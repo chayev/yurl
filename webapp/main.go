@@ -37,6 +37,7 @@ var templates = template.Must(template.ParseFiles(
 	"tpl/partials/footer.html",
 	"tpl/partials/navToAndroid.html",
 	"tpl/partials/navToiOS.html",
+	"tpl/partials/copyLink.html",
 ))
 
 // PageOutput : The contents and URL parameters that are exported

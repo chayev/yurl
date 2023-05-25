@@ -1,0 +1,16 @@
+{{ define "copyLink" }}
+<button id="copy-link">Copy link to result</button>
+<script>
+  const copyLinkBtn = document.getElementById('copy-link')
+  copyLinkBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href).then(
+      function () {
+        console.log('Async: Copying to clipboard was successful!')
+      },
+      function (err) {
+        console.error('Async: Could not copy text: ', err)
+      }
+    )
+  })
+</script>
+{{end}}
