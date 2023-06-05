@@ -1,5 +1,9 @@
 {{ define "navToAndroid" }}
-<div style="background-color: #333333; padding: 5px;">
-    <a href="/android" style="text-decoration: none; color: #ffffff">Click here to validate Android Deep Linking instead</a>
+<div style="background-color: #333333; padding: 5px">
+  <a
+    href="/android-results?url={{ .URL }}&prefix={{ .Prefix }}&bundle={{ .Bundle }}"
+    style="text-decoration: none; color: #ffffff"
+    >Click here to validate Android Deep Linking instead</a
+  >
 </div>
 {{end}}
