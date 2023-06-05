@@ -4,7 +4,7 @@
             <h1><a href="/" aria-label="Go to Homepage" tabindex="-1">yURL</a><span id="description">: Asset Links File Validator</span></h1>
             <a href="https://www.github.com/chayev/yurl" target="_blank" rel="noopener" title="Go to the GitHub project" aria-label="Go to the GitHub project" tabindex="-1"><i class="fab fa-github"></i></a>
         </header>
-        {{ template "navToiOS" }}
+        {{ template "navToiOS" . }}
         <main class="padding">
             <form method="GET" action="/android-results" id="assetlink">
                 <label class="wide" for="url">URL</label>

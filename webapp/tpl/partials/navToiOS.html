@@ -1,5 +1,9 @@
 {{ define "navToiOS" }}
-<div style="background-color: #333333; padding: 5px;">
-    <a href="/ios" style="text-decoration: none; color: #ffffff">Click here to validate iOS Deep Linking instead</a>
+<div style="background-color: #333333; padding: 5px">
+  <a
+    href="/ios-results?url={{ .URL }}&prefix={{ .Prefix }}&bundle={{ .Bundle }}"
+    style="text-decoration: none; color: #ffffff"
+    >Click here to validate iOS Deep Linking instead</a
+  >
 </div>
 {{end}}
