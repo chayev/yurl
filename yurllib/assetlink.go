@@ -47,7 +47,12 @@ func CheckAssetLinkDomain(inputURL string, packageInput string, fingerprintInput
 
 	output = append(output, fmt.Sprintf("Content-type: \t\t\t  %s \n", contentType))
 
-	if contentType[0] != "application/json" {
+	if len(contentType) == 0 {
+		output = append(output, fmt.Sprint("\nEmpty content type. Expecting [application/json]. Please update and test again. \n"))
+		return output
+	}
+
+	if contentType[0] != "application/json" { 
 		output = append(output, fmt.Sprint("\nInvalid content type. Expecting [application/json]. Please update and test again. \n"))
 		output = append(output, fmt.Sprint("\nIf you believe this error is invalid, please open an issue on github or email support@chayev.com and we will investigate."))
 		return output
