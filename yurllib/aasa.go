@@ -57,6 +57,10 @@ func CheckAASADomain(inputURL string, bundleIdentifier string, teamIdentifier st
 
 	output = append(output, messages...)
 
+	if cleanedDomain == "" {
+		return output
+	}
+
 	// call loadAASAContents and handle response
 	rawResult, message, errors := loadAASAContents(cleanedDomain)
 	if len(errors) > 0 {
