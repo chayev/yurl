@@ -121,6 +121,7 @@ func viewResultsHandler(w http.ResponseWriter, r *http.Request) {
 	if url == "" {
 		output = append(output, "Enter URL to validate.")
 	} else {
+		log.Println("\n####Validating url: " + url + "\n")
 		// Call the appropriate validation function based on the isAndroid boolean
 		if isAndroid {
 			output = yurllib.CheckAssetLinkDomain(url, prefix, bundle)
