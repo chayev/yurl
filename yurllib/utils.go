@@ -14,6 +14,7 @@ func getDomain(input string) (string, []string) {
 	parsedURL, err := url.Parse(input)
 	if err != nil {
 		output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
+		return "", output
 	}
 
 	scheme := parsedURL.Scheme
@@ -26,6 +27,7 @@ func getDomain(input string) (string, []string) {
 	parsedURL, err = url.Parse(parsedURL.String())
 	if err != nil {
 		output = append(output, fmt.Sprintf("The URL failed to parse with error %s \n", err))
+		return "", output
 	}
 
 	return parsedURL.Host, output

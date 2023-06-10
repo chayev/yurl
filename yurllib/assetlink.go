@@ -32,6 +32,10 @@ func CheckAssetLinkDomain(inputURL string, packageInput string, fingerprintInput
 
 	output = append(output, messages...)
 
+	if cleanedDomain == "" {
+		return output
+	}
+
 	rawResult, message, errors := loadAssetLinkContents(cleanedDomain)
 	if len(errors) > 0 {
 		for _, e := range errors {
