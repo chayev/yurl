@@ -1,0 +1,13 @@
+[Unit]
+Description=yURL
+
+[Service]
+ExecStart=/usr/local/yurl/yurl-webapp
+Restart=on-failure
+SyslogIdentifier=yurl
+Environment="Y_THEME_ROOT=/usr/local/yurl/"
+StandardOutput=append:/var/log/yurl.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
