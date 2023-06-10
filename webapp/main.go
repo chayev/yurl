@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/chayev/yurl/yurllib"
@@ -26,18 +27,20 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+var envRoot = os.Getenv("Y_THEME_ROOT")
+
 // Initialize the templates on program start-up
 var templates = template.Must(template.ParseFiles(
-	"tpl/home.html",
-	"tpl/ios.html",
-	"tpl/ios-results.html",
-	"tpl/android.html",
-	"tpl/android-results.html",
-	"tpl/partials/header.html",
-	"tpl/partials/footer.html",
-	"tpl/partials/navToAndroid.html",
-	"tpl/partials/navToiOS.html",
-	"tpl/partials/copyLink.html",
+	envRoot + "tpl/home.html",
+	envRoot + "tpl/ios.html",
+	envRoot + "tpl/ios-results.html",
+	envRoot + "tpl/android.html",
+	envRoot + "tpl/android-results.html",
+	envRoot + "tpl/partials/header.html",
+	envRoot + "tpl/partials/footer.html",
+	envRoot + "tpl/partials/navToAndroid.html",
+	envRoot + "tpl/partials/navToiOS.html",
+	envRoot + "tpl/partials/copyLink.html",
 ))
 
 // PageOutput : The contents and URL parameters that are exported
