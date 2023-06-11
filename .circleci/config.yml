@@ -51,7 +51,7 @@ workflows:
 jobs:
   test:
     docker:
-      - image: cimg/go:1.20
+      - image: cimg/go:1.19.4
     steps:
       - checkout
       - restore_cache:
@@ -79,7 +79,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/go:1.20
+      - image: cimg/go:1.19.4
     steps:
       - checkout
       - run:
@@ -112,7 +112,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/go:1.20
+      - image: cimg/go:1.19.4
     steps:
       - checkout
       - run:
@@ -123,7 +123,7 @@ jobs:
           command: cd webapp && go build -o yurl-webapp
   deploy:
     docker:
-      - image: cimg/go:1.20
+      - image: cimg/go:1.19.4
     steps:
       - checkout
       - add_ssh_keys
