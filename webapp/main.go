@@ -10,9 +10,11 @@ import (
 	"github.com/chayev/yurl/yurllib"
 )
 
+var envRoot = os.Getenv("Y_THEME_ROOT")
+
 func main() {
 	// Serve static files from the "static" directory
-	fs := http.FileServer(http.Dir("./static"))
+	fs := http.FileServer(http.Dir(envRoot + "static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Route requests to their corresponding handlers
@@ -26,8 +28,6 @@ func main() {
 	log.Println("Listening on :8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
-
-var envRoot = os.Getenv("Y_THEME_ROOT")
 
 // Initialize the templates on program start-up
 var templates = template.Must(template.ParseFiles(
