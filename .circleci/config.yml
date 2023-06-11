@@ -16,7 +16,7 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
       - build-cli:
-          name: "Build CLI"
+          name: 'Build CLI'
           requires:
             - test
           filters:
@@ -28,7 +28,7 @@ workflows:
           publish: true
           context: main
       - build-webapp:
-          name: "Build Webapp"
+          name: 'Build Webapp'
           requires:
             - test
           filters:
@@ -38,6 +38,15 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
           publish: true
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
 
 jobs:
   test:
@@ -49,21 +58,21 @@ jobs:
           keys:
             - go-mod-v1
       - run:
-          name: "Download Dependancies for CLI"
+          name: 'Download Dependancies for CLI'
           command: cd cli && go mod download
       - run:
-          name: "Run Tests for CLI"
+          name: 'Run Tests for CLI'
           command: cd cli && go test
       - run:
-          name: "Download Dependancies for webapp"
+          name: 'Download Dependancies for webapp'
           command: cd webapp && go mod download
       - run:
-          name: "Run Tests for webapp"
+          name: 'Run Tests for webapp'
           command: cd webapp && go test
       - save_cache:
           key: go-mod-v1
           paths:
-            - "/go/pkg/mod"
+            - '/go/pkg/mod'
   build-cli:
     parameters:
       publish:
@@ -74,7 +83,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Install GoReleaser"
+          name: 'Install GoReleaser'
           command: |
             curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v1.14.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
             goreleaser --version
@@ -82,20 +91,20 @@ jobs:
           condition: << parameters.publish >>
           steps:
             - run:
-                name: "Build Binaries with GoReleaser"
+                name: 'Build Binaries with GoReleaser'
                 command: goreleaser --snapshot --skip-publish --rm-dist
       - when:
           condition: << parameters.publish >>
           steps:
             - run:
-                name: "Build Binaries & Publish with GoReleaser"
+                name: 'Build Binaries & Publish with GoReleaser'
                 command: goreleaser
       - persist_to_workspace:
-          root: "."
+          root: '.'
           paths:
-            - "dist"
+            - 'dist'
       - run:
-          name: "Display CLI version"
+          name: 'Display CLI version'
           command: dist/yurl_linux_amd64_v1/yurl version
   build-webapp:
     parameters:
@@ -107,11 +116,37 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Download Dependancies for webapp"
+          name: 'Download Dependancies for webapp'
           command: cd webapp && go mod download
       - run:
-          name: "Build webapp"
+          name: 'Build webapp'
           command: cd webapp && go build -o yurl-webapp
+  deploy:
+    docker:
+      - image: cimg/go:1.19.4
+    steps:
+      - checkout
+      - add_ssh_keys
+      - run:
+          name: 'Download Dependancies for webapp'
+          command: cd webapp && go mod download
+      - run:
+          name: 'Build webapp'
+          command: cd webapp && go build -o yurl-webapp
+      - run:
+          name: 'Deploy'
+          command: |
+            ssh-keyscan 23.239.13.80 >> ~/.ssh/known_hosts
+            scp -r ./webapp/yurl.service root@23.239.13.80:/lib/systemd/system/
+
+            # ssh root@23.239.13.80 "systemctl stop yurl.service"
+
+            scp ./webapp/yurl-webapp root@23.239.13.80:/usr/local/yurl/yurl-webapp
+            scp -r ./webapp/tpl root@23.239.13.80:/usr/local/yurl/
+            scp -r ./webapp/static root@23.239.13.80:/usr/local/yurl/
+
+            ssh root@23.239.13.80 'systemctl daemon-reload'
+            ssh root@23.239.13.80 "systemctl start yurl.service"
   build-snap:
     parameters:
       publish-stable:
@@ -124,7 +159,7 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: "Build Snap"
+          name: 'Build Snap'
           command: |
             # Generate a version file that Snapcraft can use
             dist/yurl_linux_amd64/yurl version --short > VERSION
@@ -133,7 +168,7 @@ jobs:
           condition: << parameters.publish-stable >>
           steps:
             - run:
-                name: "Publish to Snap Store in the Stable Channel"
+                name: 'Publish to Snap Store in the Stable Channel'
                 command: |
                   # Snapcraft Tokens are valid for 1 year. This one expires September 3rd, 2021
                   echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
