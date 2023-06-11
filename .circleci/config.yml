@@ -51,7 +51,7 @@ workflows:
 jobs:
   test:
     docker:
-      - image: cimg/go:1.19.4
+      - image: cimg/go:1.20
     steps:
       - checkout
       - restore_cache:
@@ -79,13 +79,13 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/go:1.19.4
+      - image: cimg/go:1.20
     steps:
       - checkout
       - run:
           name: 'Install GoReleaser'
           command: |
-            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v1.14.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
+            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v1.18.2/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
             goreleaser --version
       - unless:
           condition: << parameters.publish >>
@@ -112,7 +112,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/go:1.19.4
+      - image: cimg/go:1.20
     steps:
       - checkout
       - run:
@@ -123,7 +123,7 @@ jobs:
           command: cd webapp && go build -o yurl-webapp
   deploy:
     docker:
-      - image: cimg/go:1.19.4
+      - image: cimg/go:1.20
     steps:
       - checkout
       - add_ssh_keys
@@ -139,7 +139,7 @@ jobs:
             ssh-keyscan 23.239.13.80 >> ~/.ssh/known_hosts
             scp -r ./webapp/yurl.service root@23.239.13.80:/lib/systemd/system/
 
-            # ssh root@23.239.13.80 "systemctl stop yurl.service"
+            ssh root@23.239.13.80 "systemctl stop yurl.service"
 
             scp ./webapp/yurl-webapp root@23.239.13.80:/usr/local/yurl/yurl-webapp
             scp -r ./webapp/tpl root@23.239.13.80:/usr/local/yurl/
