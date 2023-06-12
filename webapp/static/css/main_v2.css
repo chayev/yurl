@@ -64,7 +64,7 @@ form {
   width: 100%;
 }
 
-#input-wrapper {
+.input-wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -75,14 +75,14 @@ form {
   padding-top: 12px;
 }
 
-#input-wrapper #options {
+.input-wrapper #options {
   display: none;
   flex-direction: column;
   width: 100%;
   gap: 6px;
 }
 
-#input-wrapper label {
+.input-wrapper label {
   font-size: 12px;
 }
 

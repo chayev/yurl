@@ -19,6 +19,70 @@
       name="Description"
       content="yURL allows you to validate whether a URL is properly configured for Universal Links and App Links. This allows you to check if the apple-app-site-association and assetlinks.json on a website is properly formatted for deep links as defined by Apple and Google."
     />
+    <script>
+      if (window.location.hostname === 'yurl.chayev.com') {
+        !(function () {
+          var analytics = (window.analytics = window.analytics || [])
+          if (!analytics.initialize)
+            if (analytics.invoked)
+              window.console &&
+                console.error &&
+                console.error('Segment snippet included twice.')
+            else {
+              analytics.invoked = !0
+              analytics.methods = [
+                'trackSubmit',
+                'trackClick',
+                'trackLink',
+                'trackForm',
+                'pageview',
+                'identify',
+                'reset',
+                'group',
+                'track',
+                'ready',
+                'alias',
+                'debug',
+                'page',
+                'once',
+                'off',
+                'on',
+                'addSourceMiddleware',
+                'addIntegrationMiddleware',
+                'setAnonymousId',
+                'addDestinationMiddleware',
+              ]
+              analytics.factory = function (e) {
+                return function () {
+                  var t = Array.prototype.slice.call(arguments)
+                  t.unshift(e)
+                  analytics.push(t)
+                  return analytics
+                }
+              }
+              for (var e = 0; e < analytics.methods.length; e++) {
+                var key = analytics.methods[e]
+                analytics[key] = analytics.factory(key)
+              }
+              analytics.load = function (key, e) {
+                var t = document.createElement('script')
+                t.type = 'text/javascript'
+                t.async = !0
+                t.src =
+                  'https://cdn.segment.com/analytics.js/v1/' +
+                  key +
+                  '/analytics.min.js'
+                var n = document.getElementsByTagName('script')[0]
+                n.parentNode.insertBefore(t, n)
+                analytics._loadOptions = e
+              }
+              analytics.SNIPPET_VERSION = '4.13.1'
+              analytics.load('3cHlWjwEGL7unR570GHLj6wQBQtbyLTk')
+              analytics.page()
+            }
+        })()
+      }
+    </script>
   </head>
   <body>
     <header id="header">
@@ -90,7 +154,7 @@
             </svg>
             <h2>yURL: Deep Link Validator</h2>
             <form id="form" method="GET" action="/ios-results">
-              <div id="input-wrapper">
+              <div class="input-wrapper">
                 <label for="url">Enter URL</label>
                 <input
                   id="url"
@@ -99,7 +163,7 @@
                   placeholder="e.g. https://app.chayev.com/xyx"
                 />
               </div>
-              <div id="input-wrapper">
+              <div class="input-wrapper">
                 <div id="more">More Options</div>
                 <div id="options">
                   <label id="prefix-label" for="prefix">Apple App Prefix</label>
