@@ -41,6 +41,7 @@ var templates = template.Must(template.ParseFiles(
 	envRoot + "tpl/partials/navToAndroid.html",
 	envRoot + "tpl/partials/navToiOS.html",
 	envRoot + "tpl/partials/copyLink.html",
+	envRoot + "tpl/debug.html",
 ))
 
 // PageOutput : The contents and URL parameters that are exported
@@ -58,7 +59,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	content := &PageOutput{CurrentTime: time.Now()}
 
 	// Render the template and handle errors
-	err := templates.ExecuteTemplate(w, "home.html", content)
+	err := templates.ExecuteTemplate(w, "debug.html", content)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println(err)
