@@ -137,6 +137,7 @@
                   type="text"
                   name="url"
                   placeholder="e.g. https://app.chayev.com/xyx"
+                  required
                 />
               </div>
               <div class="input-wrapper">
@@ -174,7 +175,7 @@
       </div>
     </main>
     <footer>
-      © <span id="year">2023</span>
+      © <span id="year">{{ .CurrentTime.Year }}</span>
       <a
         href="https://www.chayev.com"
         target="_blank"

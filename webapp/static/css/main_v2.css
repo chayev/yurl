@@ -1,11 +1,25 @@
 #header {
   display: flex;
   justify-content: flex-end;
-  padding-right: 20px;
+  padding: 0 10px;
+  align-items: center;
+}
+
+#header > div {
+  display: flex;
+  margin-right: auto;
+  align-items: center;
+}
+
+#header-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-left: 8px;
+  white-space: nowrap;
 }
 
 #header .fa-github {
-  color: #333333;
+  color: #333;
   font-size: 40px;
   line-height: 70px;
 }
@@ -15,8 +29,16 @@ body {
   flex-direction: column;
   height: 100vh;
   background-color: #94d7f4;
-  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  font-family: Inter, Helvetica, Arial, sans-serif;
   color: #0d0f11;
+}
+
+.apple {
+  background-color: #94d7f4;
+}
+
+.android {
+  background-color: #9fd1a4;
 }
 
 #container {
@@ -25,15 +47,34 @@ body {
   padding-top: 70px;
 }
 
-#info-container,
-#form-container {
+#container-results {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: calc(100vh - (70px + 66.39px));
+}
+
+#results-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 10px;
+  width: 900px;
+  max-width: 1024px;
+  margin: 0 8px;
+  padding: 16px;
+}
+
+#form-container,
+#info-container {
   width: 50%;
   padding: 20px 50px;
   max-width: 600px;
 }
 
 #info-container {
-  border-right: 1px solid #808080;
+  border-right: 1px solid grey;
 }
 
 #aasa {
@@ -45,13 +86,11 @@ h2 {
 }
 
 #form-wrapper {
-  background-color: white;
+  background-color: #fff;
   border-radius: 10px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-
   padding: 16px;
 }
 
@@ -95,21 +134,77 @@ form {
   font-size: 12px;
 }
 
-#url,
+#bundle,
 #prefix,
-#bundle {
+#url {
   border-radius: 8px;
   padding: 8px;
   border: 1px solid gray;
 }
 
+#results-title {
+  text-align: center;
+}
+
 #submit-button {
   width: 100%;
-  background-color: #333333;
-  color: white;
+  background-color: #333;
+  color: #fff;
   padding: 8px;
   border-radius: 10px;
   cursor: pointer;
+}
+
+#result-form-input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.result-form-input {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.result-form-input-narrow {
+  width: 20%;
+}
+
+.result-form-input input {
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+}
+
+.result-form-input label {
+  margin-bottom: 2px;
+  font-size: 14px;
+  color: #171717;
+}
+
+#submit-icon {
+  margin-top: 18px;
+}
+
+.fa-redo-alt {
+  font-size: 30px;
+  color: #333;
+}
+
+pre {
+  border: 1px solid #333;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 6px;
+  border-color: lightgray;
+
+  text-align: left;
+  overflow-y: scroll;
+  white-space: pre-wrap;
+  font-size: 14px;
 }
 
 footer {
@@ -118,17 +213,75 @@ footer {
   padding: 24px 0;
 }
 
-@media (max-width: 768px) {
+.result-button {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.copy {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.deeplink-android {
+  display: flex;
+  justify-content: center;
+  background-color: #9fd1a4;
+  color: white;
+}
+
+.deeplink-ios {
+  display: flex;
+  justify-content: center;
+  background-color: #94d7f4;
+  color: white;
+}
+
+.deeplink-android img {
+  margin-left: 8px;
+}
+
+.deeplink-ios img {
+  margin-left: 8px;
+}
+
+#bottom-buttons-wrapper {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+#result-form-mobile-submit {
+  display: none;
+  color: white;
+  background-color: #1d4ed8;
+  border: unset;
+}
+
+a {
+  text-decoration: none;
+  color: #0d0f11;
+}
+
+a:visited {
+  color: unset;
+}
+
+@media screen and (max-width: 768px) {
+  /* Home screen -- start */
   #container {
     flex-direction: column-reverse;
-    padding: 0px 30px;
+    padding: 0 30px;
     align-items: center;
   }
 
-  #info-container,
-  #form-container {
+  #form-container,
+  #info-container {
     width: 100%;
-    padding: 35px 0px;
+    padding: 35px 0;
     max-width: 400px;
   }
 
@@ -136,9 +289,49 @@ footer {
     border-right: none;
     border-top: 1px solid #647488;
   }
-}
+  /* Home screen -- end */
 
-/* Below here for toggle styles on home page */
+  /* Results screen -- start */
+  #results-wrapper {
+    padding: 12px;
+  }
+
+  #results-title {
+    margin-bottom: 8px;
+  }
+  #result-form-input-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .result-form-input {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+  .result-form-input-narrow {
+    width: 100%;
+  }
+  .result-form-input label {
+    min-width: 50px;
+  }
+
+  .result-form-input-android label {
+    min-width: 102px;
+  }
+
+  .result-form-input input {
+    width: 100%;
+  }
+  #submit-icon {
+    display: none;
+  }
+  #result-form-mobile-submit {
+    margin-top: 0;
+    display: block;
+  }
+  /* Results screen -- end */
+}
 
 input[type='checkbox'] {
   display: none;
@@ -152,7 +345,7 @@ input[type='checkbox'] {
   display: flex;
   align-items: center;
   border-radius: 40px;
-  border: 2px solid #333333;
+  border: 2px solid #333;
   position: relative;
   transition: background-color 0.3s;
 }
@@ -171,7 +364,7 @@ input[type='checkbox'] {
   display: flex;
   content: url(../img/appleIcon.svg);
   margin-left: 5px;
-  background-color: white;
+  background-color: #fff;
   border-radius: 50%;
   width: 26px;
   height: 26px;
@@ -205,7 +398,7 @@ input:checked + .toggle {
 
 .toggle-labels {
   width: 80px;
-  font-weight: bold;
+  font-weight: 700;
   padding: 4px;
 }
 
