@@ -8,6 +8,9 @@
       href="https://img.icons8.com/metro/26/000000/link.png"
       crossorigin="anonymous"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" rel="stylesheet">    
     <link href="../static/css/sanitize.css" rel="stylesheet" />
     <link href="../static/css/main_v2.css" rel="stylesheet" />
     <script
@@ -168,7 +171,27 @@
                 />
               </div>
               <div class="input-wrapper">
-                <div id="more">More Options</div>
+                <div id="accordion">
+                  <div id="more">More Options</div>
+                  <div id="chevron">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      xml:space="preserve"
+                      width="20"
+                      shape-rendering="geometricPrecision"
+                      text-rendering="geometricPrecision"
+                      image-rendering="optimizeQuality"
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      viewBox="0 0 512 298.04"
+                    >
+                      <path
+                        fill-rule="nonzero"
+                        d="M12.08 70.78c-16.17-16.24-16.09-42.54.15-58.7 16.25-16.17 42.54-16.09 58.71.15L256 197.76 441.06 12.23c16.17-16.24 42.46-16.32 58.71-.15 16.24 16.16 16.32 42.46.15 58.7L285.27 285.96c-16.24 16.17-42.54 16.09-58.7-.15L12.08 70.78z"
+                      />
+                    </svg>
+                  </div>
+                </div>
                 <div id="options">
                   <label id="prefix-label" for="prefix">Apple App Prefix</label>
                   <input id="prefix" type="text" name="prefix" />
@@ -229,14 +252,18 @@
       let y = -1
       const options = document.querySelector('#options')
       const moreOptions = document.querySelector('#more')
-      moreOptions.addEventListener('click', () => {
+      const chevron = document.querySelector('#chevron')
+      const accordion = document.querySelector('#accordion')
+      accordion.addEventListener('click', () => {
         y *= -1
         if (y > 0) {
           options.style.display = 'flex'
           more.textContent = 'Hide Options'
+          // chevron.innerHTML = '<'
         } else {
           options.style.display = 'none'
           more.textContent = 'More Options'
+          // chevron.innerHTML = '>'
         }
       })
     </script>
