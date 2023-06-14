@@ -2,7 +2,6 @@
   display: flex;
   justify-content: flex-end;
   padding-right: 20px;
-  background-color: white;
 }
 
 #header .fa-github {
@@ -16,7 +15,8 @@ body {
   flex-direction: column;
   height: 100vh;
   background-color: #94d7f4;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  color: #0d0f11;
 }
 
 #container {
@@ -33,7 +33,7 @@ body {
 }
 
 #info-container {
-  border-right: 1px solid #647488;
+  border-right: 1px solid #808080;
 }
 
 #aasa {
@@ -71,8 +71,17 @@ form {
   gap: 4px;
 }
 
-#more {
-  padding-top: 12px;
+#accordion {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 4px;
+  border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
+}
+
+#chevron {
+  width: 20px;
+  height: 20px;
 }
 
 .input-wrapper #options {
