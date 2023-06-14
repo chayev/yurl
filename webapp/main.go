@@ -42,6 +42,8 @@ var templates = template.Must(template.ParseFiles(
 	envRoot + "tpl/partials/navToiOS.html",
 	envRoot + "tpl/partials/copyLink.html",
 	envRoot + "tpl/debug.html",
+	envRoot + "tpl/debug-ios-results.html",
+	envRoot + "tpl/debug-android-results.html",
 ))
 
 // PageOutput : The contents and URL parameters that are exported
@@ -76,9 +78,9 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 
 	var templateName string
 	if isAndroid {
-		templateName = "android.html"
+		templateName = "debug-android-results.html"
 	} else {
-		templateName = "ios.html"
+		templateName = "debug-ios-results.html"
 	}
 
 	// Render the template and handle errors
@@ -149,9 +151,9 @@ func viewResultsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Determine which template to use based on the isAndroid boolean
 	if isAndroid {
-		templateName = "android-results.html"
+		templateName = "debug-android-results.html"
 	} else {
-		templateName = "ios-results.html"
+		templateName = "debug-ios-results.html"
 	}
 
 	// Render the template and handle errors
