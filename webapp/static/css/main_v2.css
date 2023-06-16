@@ -184,7 +184,7 @@ input:checked + .toggle {
 
 #switch:checked + .toggle .toggle-icon:before {
   content: url(../img/droidIcon.svg);
-  margin-left: calc(100% + 10px);
+  margin-left: 45px;
 }
 
 #toggle-container {
