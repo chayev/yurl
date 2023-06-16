@@ -140,47 +140,51 @@ footer {
 /* Below here for toggle styles on home page */
 
 input[type='checkbox'] {
-  height: 0;
-  width: 0;
-  position: absolute;
-  right: -2000px;
+  display: none;
 }
 
-#toggle {
+.toggle {
   cursor: pointer;
-  text-indent: -9999px;
   width: 80px;
   height: 40px;
   background: #5fc9f8;
-  display: block;
+  display: flex;
+  align-items: center;
   border-radius: 40px;
   border: 2px solid #333333;
   position: relative;
+  transition: background-color 0.3s;
 }
 
-#toggle:after {
-  content: '';
+.toggle-icon {
+  font-size: 24px;
+  line-height: 1;
+  margin: 0;
   position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: margin-left 0.3s;
+}
+
+.toggle-icon:before {
+  display: flex;
+  content: url(../img/appleIcon.svg);
+  margin-left: 5px;
+  background-color: white;
+  border-radius: 50%;
   width: 26px;
   height: 26px;
-  background: #fff;
-  border-radius: 30px;
-  transition: 0.3s;
+  align-items: center;
+  justify-content: center;
 }
 
-input:checked + #toggle {
+input:checked + .toggle {
   background: #7cce8b;
 }
 
-input:checked + #toggle:after {
-  left: calc(100% - 5px);
-  transform: translateX(-100%);
-}
-
-#toggle:active:after {
-  width: 45px;
+#switch:checked + .toggle .toggle-icon:before {
+  content: url(../img/droidIcon.svg);
+  margin-left: calc(100% + 10px);
 }
 
 #toggle-container {
@@ -193,7 +197,7 @@ input:checked + #toggle:after {
   justify-content: space-around;
   align-items: center;
   width: 240px;
-  margin: 24px 0px;
+  margin: 12px;
 }
 
 .toggle-labels {
