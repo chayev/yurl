@@ -105,10 +105,11 @@ form {
 
 #submit-button {
   width: 100%;
-  background-color: black;
+  background-color: #333333;
   color: white;
   padding: 8px;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 footer {
@@ -176,6 +177,7 @@ input[type='checkbox'] {
   height: 26px;
   align-items: center;
   justify-content: center;
+  transition: 0.3s;
 }
 
 input:checked + .toggle {
@@ -185,6 +187,7 @@ input:checked + .toggle {
 #switch:checked + .toggle .toggle-icon:before {
   content: url(../img/droidIcon.svg);
   margin-left: 45px;
+  transition: 0.3s;
 }
 
 #toggle-container {
