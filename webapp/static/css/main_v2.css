@@ -226,6 +226,33 @@ footer {
   color: white;
 }
 
+.animate-copy {
+  animation: fadeInOut 700ms linear 1 forwards;
+}
+
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-copy-fadeIn {
+  animation: fadeIn 700ms linear 1 forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .deeplink-android {
   display: flex;
   justify-content: center;
@@ -317,7 +344,8 @@ a:visited {
   }
 
   .result-form-input-android label {
-    min-width: 102px;
+    width: 80px;
+    min-width: 80px;
   }
 
   .result-form-input input {

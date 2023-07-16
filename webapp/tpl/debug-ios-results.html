@@ -163,7 +163,9 @@
               Validate Android
               <img src="../static/img/droidIcon.svg" height="17" width="17" />
             </button>
-            <button class="result-button copy">Copy Results</button>
+            <button class="result-button copy">
+              <div>Copy Results</div>
+            </button>
           </div>
         </div>
       </div>
@@ -183,14 +185,34 @@
   <script>
     const copyLinkBtn = document.querySelector('.copy')
     copyLinkBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(window.location.href).then(
-        function () {
-          console.log('Async: Copying to clipboard was successful!')
-        },
-        function (err) {
-          console.error('Async: Could not copy text: ', err)
-        }
-      )
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(async function () {
+          console.log('Copying to clipboard was successful!')
+          const loadingState =
+            '<img class="animate-copy" src="../static/img/loading.svg" height="30" width="30" alt="Loading Icon" />'
+          const copiedState = '<div class="animate-copy">Copied!</div>'
+          const resetState =
+            '<div class="animate-copy-fadeIn">Copy Results</div>'
+          await new Promise((resolve) =>
+            setTimeout(() => {
+              copyLinkBtn.style.padding = '2px 8px'
+              copyLinkBtn.innerHTML = loadingState
+              resolve()
+            }, 400)
+          )
+          await new Promise((resolve) =>
+            setTimeout(() => {
+              copyLinkBtn.style.padding = '8px'
+              copyLinkBtn.innerHTML = copiedState
+              resolve()
+            }, 700)
+          )
+          setTimeout(() => {
+            copyLinkBtn.innerHTML = resetState
+          }, 700)
+        })
+        .catch((err) => console.error('Could not copy text: ', err))
     })
   </script>
 </html>
