@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type assetLinkFile []struct {
@@ -56,7 +57,7 @@ func CheckAssetLinkDomain(inputURL string, packageInput string, fingerprintInput
 		return output
 	}
 
-	if contentType[0] != "application/json" { 
+	if !strings.Contains(contentType[0], "application/json") {
 		output = append(output, fmt.Sprint("\nInvalid content type. Expecting [application/json]. Please update and test again. \n"))
 		output = append(output, fmt.Sprint("\nIf you believe this error is invalid, please open an issue on github or email support@chayev.com and we will investigate."))
 		return output
